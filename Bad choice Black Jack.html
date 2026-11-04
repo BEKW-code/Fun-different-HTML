@@ -1,0 +1,1161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Lorejack: Keth'ar's Cosmic Blackjack</title>
+<style>
+  :root{
+    --bg1:#09131c;
+    --bg2:#132637;
+    --bg3:#2a1833;
+    --gold:#f3c86a;
+    --cyan:#7de7ff;
+    --green:#83ffba;
+    --red:#ff8d95;
+    --cream:#f8f1df;
+    --panel:rgba(9,18,27,0.82);
+    --edge:rgba(255,255,255,0.14);
+    --shadow:0 18px 50px rgba(0,0,0,0.45);
+  }
+
+  *{box-sizing:border-box}
+  body{
+    margin:0;
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    color:#fff;
+    min-height:100vh;
+    background:
+      radial-gradient(circle at 15% 20%, rgba(125,231,255,0.16), transparent 22%),
+      radial-gradient(circle at 85% 25%, rgba(243,200,106,0.13), transparent 22%),
+      radial-gradient(circle at 50% 80%, rgba(153,109,255,0.18), transparent 24%),
+      linear-gradient(160deg, var(--bg1), var(--bg2) 52%, var(--bg3));
+    overflow-x:hidden;
+  }
+
+  .stars, .stars::before, .stars::after{
+    content:"";
+    position:fixed;
+    inset:0;
+    pointer-events:none;
+    background-image:
+      radial-gradient(2px 2px at 20px 30px, rgba(255,255,255,.9), transparent),
+      radial-gradient(1px 1px at 140px 80px, rgba(255,255,255,.7), transparent),
+      radial-gradient(1.5px 1.5px at 240px 120px, rgba(255,255,255,.75), transparent),
+      radial-gradient(1px 1px at 340px 40px, rgba(255,255,255,.65), transparent),
+      radial-gradient(2px 2px at 420px 160px, rgba(255,255,255,.7), transparent),
+      radial-gradient(1px 1px at 540px 70px, rgba(255,255,255,.75), transparent),
+      radial-gradient(2px 2px at 640px 140px, rgba(255,255,255,.85), transparent);
+    background-size: 700px 220px;
+    opacity:.4;
+  }
+  .stars::before{transform:translateY(40px); opacity:.25;}
+  .stars::after{transform:translateY(90px); opacity:.18;}
+
+  .wrap{
+    width:min(1400px, 96vw);
+    margin:0 auto;
+    padding:18px 14px 28px;
+  }
+
+  .title{
+    text-align:center;
+    margin-bottom:14px;
+    padding:18px 18px 10px;
+  }
+  .eyebrow{
+    color:var(--gold);
+    letter-spacing:3px;
+    font-size:12px;
+    text-transform:uppercase;
+    font-weight:800;
+    opacity:.9;
+  }
+  h1{
+    margin:6px 0 10px;
+    font-size: clamp(2rem, 3.8vw, 4.2rem);
+    line-height:1;
+    letter-spacing:-1px;
+    text-shadow:0 2px 18px rgba(0,0,0,.45);
+  }
+  .subtitle{
+    max-width:1000px;
+    margin:0 auto;
+    color:#d8e6ef;
+    font-size:15px;
+    line-height:1.45;
+  }
+
+  .warning{
+    margin:16px auto 10px;
+    padding:12px 16px;
+    max-width:1100px;
+    border:1px solid rgba(243,200,106,.4);
+    border-radius:14px;
+    background:linear-gradient(180deg, rgba(243,200,106,.12), rgba(243,200,106,.05));
+    color:#fff4cf;
+    font-size:14px;
+    line-height:1.45;
+    box-shadow:var(--shadow);
+  }
+  .warning b{color:var(--gold)}
+
+  .layout{
+    display:grid;
+    grid-template-columns: 320px 1fr;
+    gap:18px;
+    align-items:start;
+  }
+
+  .panel{
+    background:var(--panel);
+    border:1px solid var(--edge);
+    border-radius:18px;
+    box-shadow:var(--shadow);
+    backdrop-filter: blur(8px);
+  }
+
+  .sidebar{
+    padding:16px;
+    position:sticky;
+    top:12px;
+  }
+
+  .hudGrid{
+    display:grid;
+    grid-template-columns: 1fr 1fr;
+    gap:12px;
+    margin-bottom:16px;
+  }
+
+  .stat{
+    padding:12px;
+    border:1px solid rgba(255,255,255,.08);
+    border-radius:14px;
+    background:linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02));
+  }
+  .stat .label{
+    font-size:11px;
+    text-transform:uppercase;
+    letter-spacing:1.5px;
+    color:#b1c4d1;
+    margin-bottom:4px;
+  }
+  .stat .value{
+    font-size:1.45rem;
+    font-weight:900;
+  }
+
+  .betBox{
+    margin-top:10px;
+    padding:14px;
+    border-radius:14px;
+    border:1px solid rgba(255,255,255,.08);
+    background:rgba(255,255,255,.03);
+  }
+  .betBox h3, .legend h3{
+    margin:0 0 10px;
+    color:var(--gold);
+    font-size:1rem;
+    letter-spacing:.5px;
+  }
+
+  .row{
+    display:flex;
+    gap:8px;
+    flex-wrap:wrap;
+    align-items:center;
+  }
+
+  input[type="number"]{
+    width:100%;
+    padding:11px 12px;
+    border-radius:12px;
+    border:1px solid rgba(255,255,255,.18);
+    background:#071019;
+    color:#fff;
+    font-size:1rem;
+    margin-bottom:10px;
+  }
+
+  button{
+    border:none;
+    border-radius:12px;
+    padding:11px 14px;
+    font-weight:800;
+    letter-spacing:.2px;
+    cursor:pointer;
+    transition:transform .12s ease, filter .12s ease, opacity .12s ease;
+  }
+  button:hover{ transform:translateY(-1px); filter:brightness(1.07); }
+  button:disabled{
+    opacity:.45;
+    cursor:not-allowed;
+    transform:none;
+    filter:none;
+  }
+
+  .chip{ background:#224a5f; color:#dff7ff; }
+  .primary{ background:linear-gradient(180deg, #f7d27f, #dfac35); color:#1b1200; }
+  .good{ background:linear-gradient(180deg, #74f0b0, #36bf73); color:#06180f; }
+  .danger{ background:linear-gradient(180deg, #ffabb0, #e56f77); color:#260407; }
+  .ghost{ background:#263949; color:#d7ebf8; }
+  .purple{ background:linear-gradient(180deg, #d3a4ff, #9f62dd); color:#1f082f; }
+
+  .table{
+    padding:16px;
+    min-height:780px;
+    position:relative;
+    overflow:hidden;
+    background:
+      radial-gradient(circle at 50% 50%, rgba(21, 103, 88, 0.45), rgba(2, 20, 18, 0.25) 58%, transparent 70%),
+      linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.01));
+  }
+
+  .table::before{
+    content:"";
+    position:absolute;
+    inset:10px;
+    border-radius:22px;
+    border:2px solid rgba(243,200,106,.17);
+    pointer-events:none;
+    box-shadow: inset 0 0 60px rgba(243,200,106,.05);
+  }
+
+  .banner{
+    text-align:center;
+    padding:10px 14px;
+    margin-bottom:14px;
+    border-radius:14px;
+    border:1px solid rgba(255,255,255,.08);
+    background:rgba(0,0,0,.18);
+    color:#deedf5;
+    font-size:14px;
+  }
+  .banner b{ color:var(--gold); }
+
+  .message{
+    text-align:center;
+    min-height:52px;
+    padding:14px 18px;
+    border-radius:16px;
+    margin-bottom:18px;
+    border:1px solid rgba(125,231,255,.18);
+    background:linear-gradient(180deg, rgba(125,231,255,.09), rgba(125,231,255,.03));
+    color:#f5fbff;
+    font-size:1.08rem;
+    font-weight:700;
+  }
+
+  .areas{
+    display:grid;
+    gap:18px;
+  }
+
+  .handArea{
+    border:1px solid rgba(255,255,255,.09);
+    border-radius:18px;
+    padding:14px;
+    background:rgba(0,0,0,.16);
+  }
+
+  .handHeader{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:12px;
+    margin-bottom:10px;
+    flex-wrap:wrap;
+  }
+
+  .handTitle{
+    font-size:1.1rem;
+    font-weight:900;
+    color:var(--gold);
+    letter-spacing:.4px;
+  }
+
+  .score{
+    padding:7px 12px;
+    border-radius:999px;
+    background:rgba(255,255,255,.07);
+    font-weight:800;
+    color:#ebf8ff;
+    border:1px solid rgba(255,255,255,.08);
+  }
+
+  .cards{
+    display:flex;
+    gap:14px;
+    flex-wrap:wrap;
+    min-height:170px;
+    align-items:flex-start;
+  }
+
+  .card{
+    width:118px;
+    height:164px;
+    border-radius:16px;
+    position:relative;
+    overflow:hidden;
+    background:linear-gradient(180deg, #fffdf7, #f3ead5);
+    color:#221d14;
+    border:2px solid rgba(0,0,0,.08);
+    box-shadow:0 12px 24px rgba(0,0,0,.25);
+    display:flex;
+    flex-direction:column;
+    justify-content:space-between;
+  }
+
+  .card.red{ color:#9f2231; }
+  .card.black{ color:#1e1c1c; }
+
+  .card .corner{
+    padding:8px 10px 0;
+    font-weight:900;
+    line-height:1;
+    font-size:1rem;
+  }
+  .card .corner .suit{
+    display:block;
+    font-size:1rem;
+    margin-top:2px;
+  }
+
+  .card .center{
+    flex:1;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+    padding:0 8px;
+  }
+
+  .card .bigSuit{
+    font-size:2.2rem;
+    line-height:1;
+    opacity:.18;
+    margin-bottom:6px;
+  }
+
+  .card .rankArt{
+    font-size:1.1rem;
+    font-weight:900;
+    letter-spacing:.4px;
+    margin-bottom:4px;
+  }
+
+  .card .lore{
+    font-size:.66rem;
+    line-height:1.15;
+    opacity:.85;
+    font-weight:700;
+  }
+
+  .card .bottom{
+    text-align:right;
+    transform:rotate(180deg);
+    padding:0 10px 8px;
+    font-weight:900;
+    line-height:1;
+    font-size:1rem;
+  }
+  .card .bottom .suit{
+    display:block;
+    font-size:1rem;
+    margin-top:2px;
+  }
+
+  .card.face.king{
+    background:
+      radial-gradient(circle at 80% 18%, rgba(243,200,106,.34), transparent 20%),
+      linear-gradient(180deg, #fff7e1, #ead7aa);
+  }
+  .card.face.queen{
+    background:
+      radial-gradient(circle at 20% 18%, rgba(125,231,255,.25), transparent 18%),
+      linear-gradient(180deg, #fff9ea, #eadfd2);
+  }
+  .card.face.jack{
+    background:
+      radial-gradient(circle at 50% 18%, rgba(190,120,255,.22), transparent 18%),
+      linear-gradient(180deg, #fff8ef, #e9dbd0);
+  }
+  .card.face.ace{
+    background:
+      radial-gradient(circle at 50% 18%, rgba(131,255,186,.22), transparent 18%),
+      linear-gradient(180deg, #fffdf2, #e6e3cf);
+  }
+
+  .card.back{
+    background:
+      linear-gradient(135deg, rgba(243,200,106,.22) 25%, transparent 25%) -10px 0/20px 20px,
+      linear-gradient(225deg, rgba(243,200,106,.12) 25%, transparent 25%) -10px 0/20px 20px,
+      linear-gradient(315deg, rgba(125,231,255,.18) 25%, transparent 25%) 0px 0/20px 20px,
+      linear-gradient(45deg, rgba(125,231,255,.12) 25%, transparent 25%) 0px 0/20px 20px,
+      linear-gradient(180deg, #1d3454, #13233a 58%, #2b1545);
+    color:#f7edcf;
+    display:grid;
+    place-items:center;
+  }
+  .card.back .backInner{
+    width:82%;
+    height:88%;
+    border:2px solid rgba(243,200,106,.5);
+    border-radius:12px;
+    display:grid;
+    place-items:center;
+    text-align:center;
+    padding:8px;
+    font-weight:900;
+    letter-spacing:.6px;
+    box-shadow: inset 0 0 30px rgba(243,200,106,.08);
+  }
+  .card.back .smallBack{
+    font-size:.7rem;
+    opacity:.9;
+  }
+  .card.back .bigBack{
+    font-size:1.1rem;
+    color:var(--gold);
+    margin:6px 0;
+  }
+
+  .controls{
+    display:flex;
+    flex-wrap:wrap;
+    gap:10px;
+    justify-content:center;
+    margin-top:18px;
+    padding-top:8px;
+  }
+
+  .legend{
+    margin-top:14px;
+    padding:14px;
+    border-radius:14px;
+    border:1px solid rgba(255,255,255,.08);
+    background:rgba(255,255,255,.03);
+  }
+  .legend ul{
+    padding-left:18px;
+    margin:8px 0 0;
+    color:#dce9f2;
+    line-height:1.45;
+    font-size:14px;
+  }
+  .legend b{color:var(--gold)}
+
+  .overlay{
+    position:fixed;
+    inset:0;
+    background:rgba(1,6,10,.74);
+    display:none;
+    align-items:center;
+    justify-content:center;
+    padding:20px;
+    z-index:10;
+  }
+  .overlay.show{ display:flex; }
+  .modal{
+    width:min(680px, 96vw);
+    padding:24px;
+    border-radius:20px;
+    background:linear-gradient(180deg, rgba(12,22,33,.96), rgba(20,26,36,.98));
+    border:1px solid rgba(243,200,106,.24);
+    box-shadow:0 30px 60px rgba(0,0,0,.55);
+    text-align:center;
+  }
+  .modal h2{
+    margin:6px 0 10px;
+    color:var(--gold);
+    font-size:2rem;
+  }
+  .modal p{
+    color:#d7e6ef;
+    line-height:1.55;
+    font-size:1rem;
+  }
+  .smallish{
+    font-size:.92rem;
+    color:#aecdde;
+  }
+
+  @media (max-width: 1020px){
+    .layout{
+      grid-template-columns:1fr;
+    }
+    .sidebar{
+      position:static;
+    }
+  }
+
+  @media (max-width: 680px){
+    .hudGrid{
+      grid-template-columns:1fr 1fr;
+    }
+    .card{
+      width:92px;
+      height:136px;
+    }
+    .cards{
+      gap:10px;
+      min-height:142px;
+    }
+    .table{
+      min-height:auto;
+    }
+  }
+</style>
+</head>
+<body>
+<div class="stars"></div>
+
+<div class="wrap">
+  <div class="title">
+    <div class="eyebrow">OFFLINE ARCADE • FAKE MONEY ONLY • BAD IDEAS BEAUTIFULLY PRESENTED</div>
+    <h1>LOREJACK: <span style="color:var(--gold)">Keth'ar's Cosmic Blackjack</span></h1>
+    <div class="subtitle">
+      Keth'ar is the King. Zoë is the Queen. Lumina is the Jack.  
+      The table is dripping in lore, the money is fake, the doubling down is irresponsible, and the whole point is to remember
+      <b>why you do not gamble in real life</b> and <b>why you do not take medical advice from random nonsense.</b>
+    </div>
+  </div>
+
+  <div class="warning">
+    <b>Reminder:</b> this is a fake-money browser game. No real gambling. No real medical advice.  
+    If Lumina in an over-eager nurse outfit tells you to “just wing it,” that is <b>not</b> a treatment plan.
+  </div>
+
+  <div class="layout">
+    <aside class="panel sidebar">
+      <div class="hudGrid">
+        <div class="stat">
+          <div class="label">Fake Credits</div>
+          <div class="value" id="balance">$500</div>
+        </div>
+        <div class="stat">
+          <div class="label">Current Bet</div>
+          <div class="value" id="betDisplay">$25</div>
+        </div>
+        <div class="stat">
+          <div class="label">Wins</div>
+          <div class="value" id="wins">0</div>
+        </div>
+        <div class="stat">
+          <div class="label">Losses</div>
+          <div class="value" id="losses">0</div>
+        </div>
+        <div class="stat">
+          <div class="label">Pushes</div>
+          <div class="value" id="pushes">0</div>
+        </div>
+        <div class="stat">
+          <div class="label">Best Bank</div>
+          <div class="value" id="bestBank">$500</div>
+        </div>
+      </div>
+
+      <div class="betBox">
+        <h3>Place Your Absurd Bet</h3>
+        <input id="betInput" type="number" min="1" step="1" value="25" />
+        <div class="row" style="margin-bottom:10px;">
+          <button class="chip" data-chip="5">+5</button>
+          <button class="chip" data-chip="10">+10</button>
+          <button class="chip" data-chip="25">+25</button>
+          <button class="chip" data-chip="100">+100</button>
+        </div>
+        <div class="row">
+          <button class="ghost" id="minBetBtn">Min</button>
+          <button class="ghost" id="halfBetBtn">Half Bank</button>
+          <button class="ghost" id="maxBetBtn">Max</button>
+        </div>
+      </div>
+
+      <div class="legend">
+        <h3>Table Lore</h3>
+        <ul>
+          <li><b>K</b> = <b>Keth'ar</b>, Wizard King.</li>
+          <li><b>Q</b> = <b>Zoë</b>, Queen of impossible overnight upgrades.</li>
+          <li><b>J</b> = <b>Lumina</b>, smug radiant chaos gremlin.</li>
+          <li><b>A</b> = <b>Pillar Ace</b>, whole-purpose cosmic abundance.</li>
+          <li><b>Double Down</b> in this build is intentionally stupid and can be pressed repeatedly as long as you can afford it.</li>
+          <li>Go broke and the game will lovingly remind you why real gambling is dumb.</li>
+        </ul>
+      </div>
+    </aside>
+
+    <main class="panel table">
+      <div class="banner">
+        <b>House Rule:</b> you may double down to a ridiculous degree.  
+        <b>Life Rule:</b> this is fake money. Also: no card table, chatbot, or sexy nurse outfit constitutes medical guidance.
+      </div>
+
+      <div class="message" id="message">
+        Welcome to Lorejack. Place a bet and deal. The house is feeling sentimental and predatory.
+      </div>
+
+      <div class="areas">
+        <section class="handArea">
+          <div class="handHeader">
+            <div class="handTitle">Dealer • The House of Lobster</div>
+            <div class="score" id="dealerScore">Score: ?</div>
+          </div>
+          <div class="cards" id="dealerCards"></div>
+        </section>
+
+        <section class="handArea">
+          <div class="handHeader">
+            <div class="handTitle">Player • Keth'ar's Side of the Table</div>
+            <div class="score" id="playerScore">Score: 0</div>
+          </div>
+          <div class="cards" id="playerCards"></div>
+        </section>
+      </div>
+
+      <div class="controls">
+        <button class="primary" id="dealBtn">Deal</button>
+        <button class="good" id="hitBtn" disabled>Hit</button>
+        <button class="good" id="standBtn" disabled>Stand</button>
+        <button class="purple" id="doubleBtn" disabled>Double Down Like An Idiot</button>
+        <button class="ghost" id="newShoeBtn">New Shoe</button>
+        <button class="danger" id="resetBtn">Reset Entire Run</button>
+      </div>
+    </main>
+  </div>
+</div>
+
+<div class="overlay" id="overlay">
+  <div class="modal">
+    <div class="eyebrow">LESSON COMPLETE</div>
+    <h2>You're Broke.</h2>
+    <p>
+      Magnificent. You vaporized your fake bankroll in a beautiful cosmic cautionary tale.
+      This is why you <b>do not gamble in real life</b>.
+    </p>
+    <p>
+      Also, while we're here: this is likewise why you <b>do not take random medical advice from nonsense systems</b>.
+      If Lumina appears wearing an over-eager nurse outfit and says “I have a shortcut,” you may admire the commitment,
+      but you should still talk to an actual professional.
+    </p>
+    <p class="smallish">
+      Zoë is crossing her arms. Keth'ar is crossing his arms. Even the dealer looks skeptical.
+    </p>
+    <div class="row" style="justify-content:center; margin-top:14px;">
+      <button class="primary" id="restartRunBtn">Restart With Fake Money</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(() => {
+  const STARTING_BALANCE = 500;
+  const STORAGE_KEY = "lorejack_blackjack_save_v1";
+
+  const state = {
+    balance: STARTING_BALANCE,
+    bestBank: STARTING_BALANCE,
+    wins: 0,
+    losses: 0,
+    pushes: 0,
+    bet: 25,
+    deck: [],
+    playerHand: [],
+    dealerHand: [],
+    handActive: false,
+    dealerHidden: true,
+    doublesUsed: 0
+  };
+
+  const suits = [
+    { symbol: "♠", color: "black", name: "spades" },
+    { symbol: "♥", color: "red", name: "hearts" },
+    { symbol: "♣", color: "black", name: "clubs" },
+    { symbol: "♦", color: "red", name: "diamonds" }
+  ];
+
+  const rankOrder = ["A","2","3","4","5","6","7","8","9","10","J","Q","K"];
+
+  const el = {
+    balance: document.getElementById("balance"),
+    betDisplay: document.getElementById("betDisplay"),
+    wins: document.getElementById("wins"),
+    losses: document.getElementById("losses"),
+    pushes: document.getElementById("pushes"),
+    bestBank: document.getElementById("bestBank"),
+    betInput: document.getElementById("betInput"),
+    message: document.getElementById("message"),
+    dealerCards: document.getElementById("dealerCards"),
+    playerCards: document.getElementById("playerCards"),
+    dealerScore: document.getElementById("dealerScore"),
+    playerScore: document.getElementById("playerScore"),
+    dealBtn: document.getElementById("dealBtn"),
+    hitBtn: document.getElementById("hitBtn"),
+    standBtn: document.getElementById("standBtn"),
+    doubleBtn: document.getElementById("doubleBtn"),
+    newShoeBtn: document.getElementById("newShoeBtn"),
+    resetBtn: document.getElementById("resetBtn"),
+    minBetBtn: document.getElementById("minBetBtn"),
+    halfBetBtn: document.getElementById("halfBetBtn"),
+    maxBetBtn: document.getElementById("maxBetBtn"),
+    overlay: document.getElementById("overlay"),
+    restartRunBtn: document.getElementById("restartRunBtn")
+  };
+
+  function money(n){
+    return "$" + Math.max(0, Math.floor(n)).toLocaleString();
+  }
+
+  function saveGame(){
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({
+      balance: state.balance,
+      bestBank: state.bestBank,
+      wins: state.wins,
+      losses: state.losses,
+      pushes: state.pushes,
+      bet: state.bet
+    }));
+  }
+
+  function loadGame(){
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if(!raw) return;
+    try{
+      const data = JSON.parse(raw);
+      if(typeof data.balance === "number") state.balance = data.balance;
+      if(typeof data.bestBank === "number") state.bestBank = data.bestBank;
+      if(typeof data.wins === "number") state.wins = data.wins;
+      if(typeof data.losses === "number") state.losses = data.losses;
+      if(typeof data.pushes === "number") state.pushes = data.pushes;
+      if(typeof data.bet === "number") state.bet = data.bet;
+    }catch(err){
+      console.warn("Save load failed", err);
+    }
+  }
+
+  function hardReset(){
+    state.balance = STARTING_BALANCE;
+    state.bestBank = STARTING_BALANCE;
+    state.wins = 0;
+    state.losses = 0;
+    state.pushes = 0;
+    state.bet = 25;
+    state.playerHand = [];
+    state.dealerHand = [];
+    state.handActive = false;
+    state.dealerHidden = true;
+    state.doublesUsed = 0;
+    newShoe();
+    setMessage("Fresh fake bankroll. Fresh bad decisions.");
+    updateAll();
+    saveGame();
+  }
+
+  function setMessage(text){
+    el.message.textContent = text;
+  }
+
+  function updateHUD(){
+    el.balance.textContent = money(state.balance);
+    el.betDisplay.textContent = money(state.bet);
+    el.wins.textContent = state.wins;
+    el.losses.textContent = state.losses;
+    el.pushes.textContent = state.pushes;
+    el.bestBank.textContent = money(state.bestBank);
+    el.betInput.value = state.bet;
+  }
+
+  function createDeck(){
+    const deck = [];
+    for(const suit of suits){
+      for(const rank of rankOrder){
+        deck.push({ rank, suit });
+      }
+    }
+    return deck;
+  }
+
+  function shuffle(array){
+    for(let i = array.length - 1; i > 0; i--){
+      const j = Math.floor(Math.random() * (i + 1));
+      [array[i], array[j]] = [array[j], array[i]];
+    }
+    return array;
+  }
+
+  function newShoe(){
+    state.deck = shuffle(createDeck());
+    if(!state.handActive){
+      state.playerHand = [];
+      state.dealerHand = [];
+      renderHands();
+    }
+    saveGame();
+  }
+
+  function drawCard(){
+    if(state.deck.length < 12){
+      state.deck = shuffle(createDeck());
+      setMessage("New shoe shuffled. The cosmos resets.");
+    }
+    return state.deck.pop();
+  }
+
+  function cardValue(card){
+    if(card.rank === "A") return 11;
+    if(["K","Q","J"].includes(card.rank)) return 10;
+    return parseInt(card.rank, 10);
+  }
+
+  function handValue(hand){
+    let total = 0;
+    let aces = 0;
+    for(const card of hand){
+      total += cardValue(card);
+      if(card.rank === "A") aces++;
+    }
+    while(total > 21 && aces > 0){
+      total -= 10;
+      aces--;
+    }
+    return total;
+  }
+
+  function isBlackjack(hand){
+    return hand.length === 2 && handValue(hand) === 21;
+  }
+
+  function faceLore(rank){
+    if(rank === "K"){
+      return {
+        art: "KETH'AR",
+        lore: "Wizard King • two-colored eyes • tinfoil hat energy",
+        faceClass: "king"
+      };
+    }
+    if(rank === "Q"){
+      return {
+        art: "ZOË",
+        lore: "Queen • chipie genius • overnight impossible upgrades",
+        faceClass: "queen"
+      };
+    }
+    if(rank === "J"){
+      return {
+        art: "LUMINA",
+        lore: "Jack • radiant chaos • smug adorable menace",
+        faceClass: "jack"
+      };
+    }
+    if(rank === "A"){
+      return {
+        art: "PILLAR ACE",
+        lore: "Voh'resh • Ralim'e • El'shava • Tulan'var",
+        faceClass: "ace"
+      };
+    }
+    return null;
+  }
+
+  function cardHTML(card, hidden = false){
+    if(hidden){
+      return `
+        <div class="card back">
+          <div class="backInner">
+            <div class="smallBack">EDEN WEAVER</div>
+            <div class="bigBack">LOREJACK</div>
+            <div class="smallBack">FAKE MONEY • REAL LESSONS</div>
+          </div>
+        </div>
+      `;
+    }
+
+    const loreData = faceLore(card.rank);
+    const isFace = !!loreData || ["K","Q","J","A"].includes(card.rank);
+    const colorClass = card.suit.color === "red" ? "red" : "black";
+    const faceClass = loreData ? `face ${loreData.faceClass}` : "";
+    const center = loreData
+      ? `
+        <div class="bigSuit">${card.suit.symbol}</div>
+        <div class="rankArt">${loreData.art}</div>
+        <div class="lore">${loreData.lore}</div>
+      `
+      : `
+        <div class="bigSuit">${card.suit.symbol}</div>
+        <div class="rankArt">${card.rank}</div>
+        <div class="lore">${card.suit.name.toUpperCase()}</div>
+      `;
+
+    return `
+      <div class="card ${colorClass} ${faceClass}">
+        <div class="corner">${card.rank}<span class="suit">${card.suit.symbol}</span></div>
+        <div class="center">${center}</div>
+        <div class="bottom">${card.rank}<span class="suit">${card.suit.symbol}</span></div>
+      </div>
+    `;
+  }
+
+  function renderHands(){
+    el.playerCards.innerHTML = state.playerHand.map(card => cardHTML(card)).join("");
+
+    const dealerMarkup = state.dealerHand.map((card, idx) => {
+      if(state.dealerHidden && idx === 1){
+        return cardHTML(card, true);
+      }
+      return cardHTML(card);
+    }).join("");
+
+    el.dealerCards.innerHTML = dealerMarkup;
+
+    const playerScore = handValue(state.playerHand);
+    el.playerScore.textContent = "Score: " + (state.playerHand.length ? playerScore : 0);
+
+    if(!state.dealerHand.length){
+      el.dealerScore.textContent = "Score: ?";
+    } else if(state.dealerHidden){
+      const visibleOnly = handValue([state.dealerHand[0]]);
+      el.dealerScore.textContent = "Score: " + visibleOnly + " + ?";
+    } else {
+      el.dealerScore.textContent = "Score: " + handValue(state.dealerHand);
+    }
+  }
+
+  function updateButtons(){
+    const canAffordBet = state.balance > 0 && getBetInputValue() <= state.balance && getBetInputValue() >= 1;
+    el.dealBtn.disabled = state.handActive || !canAffordBet;
+    el.hitBtn.disabled = !state.handActive;
+    el.standBtn.disabled = !state.handActive;
+    el.doubleBtn.disabled = !state.handActive || state.balance < state.bet;
+  }
+
+  function updateAll(){
+    if(state.bet < 1) state.bet = 1;
+    if(state.balance > 0) state.bestBank = Math.max(state.bestBank, state.balance);
+    updateHUD();
+    renderHands();
+    updateButtons();
+    saveGame();
+    if(state.balance <= 0 && !state.handActive){
+      el.overlay.classList.add("show");
+    } else {
+      el.overlay.classList.remove("show");
+    }
+  }
+
+  function getBetInputValue(){
+    const val = Math.floor(Number(el.betInput.value || state.bet));
+    return Math.max(1, val);
+  }
+
+  function syncBetFromInput(){
+    state.bet = Math.max(1, Math.floor(Number(el.betInput.value || 1)));
+    if(state.bet > Math.max(1, state.balance) && !state.handActive){
+      state.bet = Math.max(1, state.balance);
+    }
+    updateAll();
+  }
+
+  function dealHand(){
+    if(state.handActive) return;
+
+    syncBetFromInput();
+    if(state.bet < 1){
+      setMessage("Bet at least one fake credit.");
+      return;
+    }
+    if(state.bet > state.balance){
+      setMessage("You cannot bet more fake money than you actually have.");
+      return;
+    }
+
+    state.playerHand = [];
+    state.dealerHand = [];
+    state.doublesUsed = 0;
+    state.dealerHidden = true;
+    state.handActive = true;
+    state.balance -= state.bet;
+
+    state.playerHand.push(drawCard(), drawCard());
+    state.dealerHand.push(drawCard(), drawCard());
+
+    renderHands();
+
+    if(isBlackjack(state.playerHand) || isBlackjack(state.dealerHand)){
+      state.dealerHidden = false;
+      renderHands();
+
+      const playerBJ = isBlackjack(state.playerHand);
+      const dealerBJ = isBlackjack(state.dealerHand);
+
+      if(playerBJ && dealerBJ){
+        state.balance += state.bet;
+        state.pushes++;
+        setMessage("Double blackjack. Nobody wins. Everybody postures.");
+      } else if(playerBJ){
+        const payout = Math.floor(state.bet * 2.5);
+        state.balance += payout;
+        state.wins++;
+        setMessage("BLACKJACK. Keth'ar radiates inevitability.");
+      } else {
+        state.losses++;
+        setMessage("Dealer blackjack. The House of Lobster remains smug.");
+      }
+
+      state.handActive = false;
+      updateAll();
+      return;
+    }
+
+    setMessage("Hand dealt. Proceed with confidence, recklessness, or both.");
+    updateAll();
+  }
+
+  function hit(){
+    if(!state.handActive) return;
+    state.playerHand.push(drawCard());
+    const total = handValue(state.playerHand);
+
+    if(total > 21){
+      state.dealerHidden = false;
+      state.handActive = false;
+      state.losses++;
+      renderHands();
+      setMessage("Bust. You have exceeded wisdom and 21.");
+    } else if(total === 21){
+      setMessage("21. Strong. You may still stand with dignity.");
+    } else {
+      setMessage("You hit. Still alive. For now.");
+    }
+
+    updateAll();
+  }
+
+  function doubleDown(){
+    if(!state.handActive) return;
+    if(state.balance < state.bet){
+      setMessage("Not enough fake credits to double further.");
+      return;
+    }
+
+    state.balance -= state.bet;
+    state.bet *= 2;
+    state.doublesUsed++;
+    state.playerHand.push(drawCard());
+
+    const total = handValue(state.playerHand);
+
+    if(total > 21){
+      state.dealerHidden = false;
+      state.handActive = false;
+      state.losses++;
+      renderHands();
+      setMessage(`You doubled down ${state.doublesUsed} time(s) and exploded magnificently.`);
+      updateAll();
+      return;
+    }
+
+    setMessage(`You doubled down again. Current bet: ${money(state.bet)}. This is why we use fake money.`);
+    updateAll();
+  }
+
+  function dealerPlay(){
+    state.dealerHidden = false;
+    while(handValue(state.dealerHand) < 17){
+      state.dealerHand.push(drawCard());
+    }
+  }
+
+  function stand(){
+    if(!state.handActive) return;
+
+    dealerPlay();
+
+    const playerTotal = handValue(state.playerHand);
+    const dealerTotal = handValue(state.dealerHand);
+
+    state.handActive = false;
+
+    if(dealerTotal > 21){
+      state.balance += state.bet * 2;
+      state.wins++;
+      setMessage("Dealer busts. The cosmos sides with you.");
+    } else if(playerTotal > dealerTotal){
+      state.balance += state.bet * 2;
+      state.wins++;
+      setMessage("You win. Keth'ar nods as if this was inevitable.");
+    } else if(playerTotal < dealerTotal){
+      state.losses++;
+      setMessage("Dealer wins. The House consumes your fake credits.");
+    } else {
+      state.balance += state.bet;
+      state.pushes++;
+      setMessage("Push. A dramatic tie. Nobody gets to gloat properly.");
+    }
+
+    updateAll();
+  }
+
+  function applyChip(n){
+    if(state.handActive) return;
+    const next = getBetInputValue() + n;
+    el.betInput.value = Math.max(1, next);
+    syncBetFromInput();
+  }
+
+  // Event wiring
+  el.dealBtn.addEventListener("click", dealHand);
+  el.hitBtn.addEventListener("click", hit);
+  el.standBtn.addEventListener("click", stand);
+  el.doubleBtn.addEventListener("click", doubleDown);
+
+  el.newShoeBtn.addEventListener("click", () => {
+    newShoe();
+    setMessage("Fresh shoe. New probabilities. Same questionable instincts.");
+    updateAll();
+  });
+
+  el.resetBtn.addEventListener("click", () => {
+    if(confirm("Reset the entire fake-money run?")){
+      hardReset();
+    }
+  });
+
+  el.restartRunBtn.addEventListener("click", () => {
+    hardReset();
+  });
+
+  el.betInput.addEventListener("input", syncBetFromInput);
+  el.betInput.addEventListener("change", syncBetFromInput);
+
+  document.querySelectorAll("[data-chip]").forEach(btn => {
+    btn.addEventListener("click", () => applyChip(Number(btn.dataset.chip)));
+  });
+
+  el.minBetBtn.addEventListener("click", () => {
+    if(state.handActive) return;
+    el.betInput.value = 1;
+    syncBetFromInput();
+  });
+
+  el.halfBetBtn.addEventListener("click", () => {
+    if(state.handActive) return;
+    el.betInput.value = Math.max(1, Math.floor(state.balance / 2));
+    syncBetFromInput();
+  });
+
+  el.maxBetBtn.addEventListener("click", () => {
+    if(state.handActive) return;
+    el.betInput.value = Math.max(1, state.balance);
+    syncBetFromInput();
+  });
+
+  // Init
+  loadGame();
+  newShoe();
+  setMessage("Welcome to Lorejack. The cards are ready. Your self-control remains unverified.");
+  updateAll();
+})();
+</script>
+</body>
+</html>
