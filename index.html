@@ -1,0 +1,257 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Nox-Keth Arcade | Sacred Play</title>
+<style>
+:root {
+  --gold:#ffce79;
+  --cyan:#78f2ee;
+  --ink:#e9f7f7;
+}
+* { box-sizing:border-box; }
+body {
+  margin:0;
+  color:var(--ink);
+  font-family:system-ui,Segoe UI,Arial,sans-serif;
+  background:
+    radial-gradient(ellipse at 20% 0%,#214653,transparent 48%),
+    radial-gradient(ellipse at 90% 35%,#3c244d,transparent 48%),
+    #081118;
+  min-height:100vh;
+}
+header {
+  text-align:center;
+  padding:64px 20px 34px;
+}
+.eyebrow {
+  color:var(--cyan);
+  font-size:12px;
+  font-weight:900;
+  letter-spacing:4px;
+}
+h1 {
+  font-size:clamp(42px,8vw,90px);
+  line-height:1;
+  color:var(--gold);
+  margin:15px 0;
+  text-shadow:0 0 38px #e7a34a40;
+}
+header p {
+  max-width:640px;
+  margin:16px auto;
+  color:#bed0d7;
+}
+.toolbar {
+  max-width:1160px;
+  margin:0 auto 30px;
+  padding:0 18px;
+  display:flex;
+  flex-wrap:wrap;
+  gap:12px;
+}
+input,select {
+  background:#142c35;
+  border:1px solid #40636d;
+  border-radius:12px;
+  padding:13px;
+  color:white;
+  font:inherit;
+}
+input { flex:2;min-width:220px; }
+select { flex:1;min-width:160px; }
+#count {
+  text-align:center;
+  color:#a8c4c6;
+  margin-bottom:20px;
+}
+main {
+  max-width:1160px;
+  margin:auto;
+  padding:0 18px 70px;
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(230px,1fr));
+  gap:18px;
+}
+.game {
+  display:flex;
+  flex-direction:column;
+  align-items:flex-start;
+  color:inherit;
+  text-decoration:none;
+  border:1px solid #38515d;
+  border-radius:20px;
+  padding:24px;
+  min-height:215px;
+  background:linear-gradient(145deg,#19313e,#101d2a);
+  box-shadow:0 12px 28px #0005;
+  transition:transform .2s,border-color .2s,background .2s;
+}
+.game:hover {
+  transform:translateY(-6px);
+  border-color:var(--gold);
+  background:linear-gradient(145deg,#284756,#1c263f);
+}
+.emoji {
+  font-size:48px;
+  margin-bottom:15px;
+}
+.category {
+  font-size:11px;
+  letter-spacing:2px;
+  color:var(--cyan);
+  text-transform:uppercase;
+  font-weight:800;
+}
+.game h2 {
+  font-size:19px;
+  margin:8px 0;
+  line-height:1.25;
+  color:#fff5dc;
+}
+.launch {
+  color:var(--gold);
+  font-size:12px;
+  margin-top:auto;
+  padding-top:18px;
+  font-weight:900;
+  letter-spacing:1px;
+}
+footer {
+  text-align:center;
+  padding:35px 15px;
+  border-top:1px solid #344956;
+  color:#a8c4c6;
+}
+footer strong {color:var(--gold);}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="eyebrow">BEKW CODE PRESENTS</div>
+  <h1>NOX-KETH<br>ARCADE</h1>
+  <p>One wizard. Many questionable inventions.
+  An unreasonable number of browser experiments.</p>
+  <p>🦞 NO PAYWALLS · NO SHAME · SACRED PLAY 🦞</p>
+</header>
+
+<div class="toolbar">
+  <input id="search"
+    placeholder="Search the arcade...">
+  <select id="filter">
+    <option value="all">All creations</option>
+    <option value="Games">Games</option>
+    <option value="Music">Music & sound</option>
+    <option value="Art">Art & generators</option>
+    <option value="Tools">Tools & experiments</option>
+  </select>
+</div>
+
+<div id="count"></div>
+<main id="games"></main>
+
+<footer>
+  <strong>BEST BUILD WINS.</strong>
+  <p>Built for curiosity, laughter and ridiculous ideas.</p>
+  <p>Experimental audio and wellness-themed tools
+  are creative experiences, not medical treatments.</p>
+  <p>All games use fictional or simulated resources.</p>
+</footer>
+
+<script>
+const games = [
+["77 Fold","77 fold.HTML","Tools","🌀"],
+["BW Magic Eye","BW Magic eye.HTML","Art","👁️"],
+["Bad Choice Blackjack","Bad choice Black Jack.html","Games","🃏"],
+["Bass Beats Generator","Bass beats generator.HTML","Music","🔊"],
+["Binaural Beat Generator","Bi neural beat generator.HTML","Music","🎧"],
+["Character Counter & Zalgo","Character counter and Zalgo converter.HTML","Tools","🔠"],
+["Claude's Frequency Oracle","Claude's healing frequencies Oracle.HTML","Music","🔮"],
+["Color Magic Eye Forge","Color magic eye forge.HTML","Art","🌈"],
+["Crystal Breaker","Crystal Breaker.HTML","Games","💎"],
+["Cyberpunk Connect Four","Cyberpunk connect four.HTML","Games","🎮"],
+["Dice Simulator","Dice simulator.html","Games","🎲"],
+["Downloadable Beat Generator","Downloadable healing beat generator.HTML","Music","🎼"],
+["DragonDuel Z","DragonDuel Z.html","Games","🐉"],
+["Goddess Generator","Goddess Generator.HTML","Art","✨"],
+["Grok Cat Toy","Grok cat toy.HTML","Games","🐈"],
+["Grok's Deathclock","Grok's Deathclock.HTML","Tools","⏳"],
+["Healing Simon","Healing Simon by Claude.HTML","Games","🔴"],
+["Frequency Lights Out","Healing frequencies lights out.HTML","Games","💡"],
+["Missile Command","Healing missile command.HTML","Games","🚀"],
+["Hero Generator","Hero Generator.HTML","Art","🛡️"],
+["JesterFruit","JesterFruit.HTML","Games","🍒"],
+["Matrix MTM","Matrix MTM.HTML","Tools","💻"],
+["Monster Generator","Monster Generator.HTML","Art","👹"],
+["Nature Generator","Nature Generator.HTML","Art","🌳"],
+["Plex Cat Toy","Plex cat toy.HTML","Games","😺"],
+["Primal Drums","Primal Drums.HTML","Music","🥁"],
+["Quantum Neural Symphony","Quantum Neural Symphony.HTML","Music","🌌"],
+["SMS","SMS.HTML","Tools","📡"],
+["Sonic Water Purifier","Sonic Water purifier? HTML","Tools","💧"],
+["Starborn Howl","Starborn Howl.HTML","Music","🐺"],
+["Strange Frequency Generator","Strange healing frequencies generator.HTML","Music","🎶"],
+["Amplified Resonance Protocol","TA Amplified Resonance Protocol.HTML","Music","⚡"],
+["TA Napscats","TA Napscats.HTML","Art","🐱"],
+["TA Nexrath","TA Nexrath.HTML","Art","🌑"],
+["TA Souleff","TA Souleff.HTML","Art","🔥"],
+["TA War Machine Cat","TA War machine cat.HTML","Art","🤖"],
+["Text to FSK Morse","Text to FSK Morse.HTML","Tools","📻"],
+["Zalgo Text Generator","Zalgo text generator.HTML","Tools","🔤"],
+["Zoe Repair Bay","Zoe repair Bay.html","Games","🦞"]
+];
+
+const search=document.getElementById("search");
+const filter=document.getElementById("filter");
+const root=document.getElementById("games");
+const count=document.getElementById("count");
+
+function render(){
+  const term=search.value.trim().toLowerCase();
+  const type=filter.value;
+
+  const visible=games.filter(g=>
+    (type==="all"||g[2]===type) &&
+    (g[0].toLowerCase().includes(term) ||
+     g[2].toLowerCase().includes(term))
+  );
+
+  count.textContent=
+    visible.length+" creations ready to explore";
+
+  root.replaceChildren();
+
+  for(const [name,file,category,emoji] of visible){
+    const a=document.createElement("a");
+    a.className="game";
+    a.href="./"+encodeURIComponent(file);
+
+    const icon=document.createElement("div");
+    icon.className="emoji";
+    icon.textContent=emoji;
+
+    const cat=document.createElement("div");
+    cat.className="category";
+    cat.textContent=category;
+
+    const title=document.createElement("h2");
+    title.textContent=name;
+
+    const launch=document.createElement("div");
+    launch.className="launch";
+    launch.textContent="▶ LAUNCH EXPERIENCE";
+
+    a.append(icon,cat,title,launch);
+    root.appendChild(a);
+  }
+}
+
+search.addEventListener("input",render);
+filter.addEventListener("change",render);
+render();
+</script>
+</body>
+</html>
