@@ -1,0 +1,1118 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>JOY ROUTES v1.1 - Eden Weaver Trading Company</title>
+<style>
+:root{
+  --bg:#071318;--panel:#10242a;--edge:#31515a;
+  --txt:#eff8ee;--muted:#a9bfc0;--gold:#f4c573;
+  --cyan:#6df1e0;--green:#9df0a8;--red:#ffa29c
+}
+*{box-sizing:border-box}
+body{
+  margin:0;min-height:100vh;color:var(--txt);
+  font:15px/1.5 system-ui,Segoe UI,Arial,sans-serif;
+  background:
+    radial-gradient(ellipse at 8% 0%,#23545a88,transparent 45%),
+    radial-gradient(ellipse at 95% 30%,#53344a66,transparent 40%),
+    linear-gradient(160deg,#071318,#0a1519 65%,#090f1c)
+}
+button,input{font:inherit}
+button{cursor:pointer}
+button:disabled{opacity:.4;cursor:not-allowed}
+button:focus-visible,input:focus-visible{outline:2px solid var(--gold)}
+h1{font-size:38px;margin:0;letter-spacing:-1px}
+h2{font-size:21px;margin:0 0 5px}
+h3{font-size:15px;margin:0 0 7px}
+p{margin:6px 0 12px}
+small,.small{font-size:12px}
+.muted{color:var(--muted)}
+.gold{color:var(--gold)}
+.green,.pos{color:var(--green)}
+.neg{color:var(--red)}
+.shell{max-width:1300px;margin:auto;padding:22px}
+.top{
+ display:flex;justify-content:space-between;
+ align-items:center;flex-wrap:wrap;gap:12px;margin-bottom:18px
+}
+.eyebrow{
+ font-size:10px;font-weight:900;letter-spacing:2px;
+ text-transform:uppercase;color:var(--gold)
+}
+.top-actions,.nav,.buttons,.row{
+ display:flex;gap:8px;flex-wrap:wrap;align-items:center
+}
+.btn,.tab{
+ background:#18343b;color:var(--txt);border:1px solid #46646a;
+ border-radius:9px;padding:10px 13px;font-weight:700
+}
+.btn:hover:not(:disabled),.tab:hover{background:#285057}
+.btn.primary{background:var(--gold);border-color:var(--gold);color:#102028}
+.btn.cyan{background:#1b635e;border-color:var(--cyan)}
+.btn.tiny{font-size:12px;padding:6px 10px}
+.btn.danger{border-color:#99565a}
+.tab.active{background:#244b51;border-color:var(--cyan)}
+.hud{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:16px}
+.stat,.panel,.card{
+ border:1px solid var(--edge);border-radius:12px;
+ background:linear-gradient(145deg,#18343a,#0e2228)
+}
+.stat{padding:12px}
+.stat-k{font-size:10px;letter-spacing:1px;color:var(--muted);text-transform:uppercase}
+.stat-v{font-size:25px;font-weight:850}
+.stat-note{font-size:11px;color:var(--muted)}
+.progress{height:8px;background:#29464a;border-radius:9px;overflow:hidden}
+.progress span{
+ display:block;height:100%;background:linear-gradient(90deg,var(--cyan),var(--gold))
+}
+.strip{
+ padding:13px 16px;margin-bottom:15px;border:1px solid #536349;
+ background:#24332e;border-radius:11px;
+ display:flex;align-items:center;justify-content:space-between;gap:12px
+}
+.nav{margin-bottom:15px}
+.layout{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:15px;align-items:start}
+.panel{overflow:hidden}
+.section{padding:18px}
+.panelhead{
+ display:flex;justify-content:space-between;align-items:start;
+ gap:10px;margin-bottom:14px
+}
+.sideblock{padding:15px;border-bottom:1px solid #28454a}
+.sideblock:last-child{border:0}
+.righthead{padding:14px 15px;border-bottom:1px solid #28454a;font-weight:800}
+.rightstack{display:grid;gap:13px}
+.goodrow{
+ display:grid;grid-template-columns:40px 1.7fr 1fr .7fr;
+ gap:9px;align-items:center;width:100%;text-align:left;
+ padding:11px;margin-bottom:7px;color:var(--txt);
+ background:#0c2128;border:1px solid #294750;border-radius:9px
+}
+.goodrow.selected{border-color:var(--cyan);background:#183a40}
+.goodicon{font-size:26px}
+.goodname{font-weight:800}
+.price{color:var(--gold);font-size:17px;font-weight:800}
+.subhead{font-size:10px;letter-spacing:1px;color:#a0c0c1;text-transform:uppercase}
+.qtyctrl{display:flex;gap:7px;margin:10px 0}
+.qtyctrl input{
+ min-width:0;width:100%;background:#091b20;color:white;
+ border:1px solid #45666a;border-radius:8px;text-align:center;
+ font-size:19px;font-weight:800
+}
+.trading,.info,.twocol,.route-grid{
+ display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px
+}
+.info>div,.card{padding:12px}
+.info>div{background:#0f262b;border:1px solid #294750;border-radius:8px}
+.hrow{
+ display:flex;align-items:center;justify-content:space-between;
+ gap:10px
+}
+.line{height:1px;background:#315056;margin:15px 0}
+.card{margin-bottom:8px}
+.card p{font-size:12px;color:var(--muted)}
+.cardfooter{
+ display:flex;justify-content:space-between;align-items:center;
+ gap:8px;margin-top:12px
+}
+.tag{
+ display:inline-block;padding:4px 8px;border-radius:15px;
+ background:#21413e;border:1px solid #546a66;color:#cbfbeb;
+ font-size:10px;font-weight:800
+}
+.tag.hot{background:#4a2d21;color:#ffdc9d;border-color:#a46b36}
+.tag.lock{background:#282c31;color:#c1c4c6}
+.quote{
+ border-left:3px solid var(--gold);padding:12px;
+ background:#213337;font-style:italic;border-radius:0 8px 8px 0
+}
+.quote small{display:block;color:var(--gold);font-weight:800;font-style:normal}
+.pillars{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin:10px 0}
+.pillar{
+ padding:7px 2px;text-align:center;font-size:10px;
+ background:#112a2c;border:1px solid #3a4d4f;border-radius:6px
+}
+.pillar.done{background:#363026;border-color:var(--gold);color:var(--gold)}
+.mapbox{
+ position:relative;height:310px;border:1px solid #40636a;
+ border-radius:12px;overflow:hidden;
+ background:
+ radial-gradient(ellipse at 75% 80%,#285550b0,transparent 35%),
+ linear-gradient(145deg,#0a2b33,#132f34 48%,#111e2f)
+}
+.mapbox svg{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.mapnode{
+ position:absolute;transform:translate(-50%,-50%);
+ border:0;background:transparent;color:white;text-align:center;
+ min-width:76px;font-size:11px;font-weight:800
+}
+.mapnode .dot{
+ display:grid;place-items:center;width:35px;height:35px;margin:auto;
+ border-radius:50%;border:2px solid #72999a;background:#20404a;
+ font-size:19px
+}
+.mapnode.here .dot{border-color:var(--gold);background:#8c7542}
+.mapnode.closed{opacity:.45}
+.mapnode .mname{background:#081b21dd;padding:2px 5px;border-radius:4px}
+.route-grid{margin-top:14px}
+.empty{padding:25px;text-align:center;color:var(--muted);border:1px dashed #4c6368;border-radius:10px}
+.logline{display:flex;gap:12px;padding:10px;border-bottom:1px solid #28454a}
+.logdate{white-space:nowrap;color:var(--gold);font-size:11px;font-weight:800}
+.story,.callout{padding:15px;border:1px solid #536349;background:#26342c;border-radius:10px}
+.story{margin-bottom:15px}
+.toast{
+ position:fixed;bottom:20px;right:20px;z-index:80;max-width:90vw;
+ background:#1a3d40;border:1px solid var(--cyan);
+ border-radius:11px;padding:13px 17px;box-shadow:0 12px 35px #0009
+}
+.shade{
+ position:fixed;inset:0;background:#030a0be8;z-index:100;
+ display:grid;place-items:center;padding:15px
+}
+.modal{
+ max-height:90vh;overflow:auto;width:min(570px,100%);
+ background:#18343b;border:1px solid var(--gold);
+ border-radius:15px;padding:25px
+}
+.modal-actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:15px}
+.footer{text-align:center;color:#789c9e;font-size:11px;margin-top:24px}
+.start{max-width:780px;margin:8vh auto;text-align:center}
+.start h1{font-size:65px}
+.startcards{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:20px 0}
+.startcards>div{padding:15px;border:1px solid #42605e;background:#183137;border-radius:12px}
+.telescope-details{
+ margin-top:9px;border:1px solid #39626a;padding:8px;
+ border-radius:8px;background:#102c33
+}
+.telescope-details summary{cursor:pointer;color:var(--cyan);font-size:12px;font-weight:800}
+.scanlist{max-height:240px;overflow:auto}
+.scanlist .hrow{padding:5px 0;border-bottom:1px solid #345056}
+#import-file{display:none}
+@media(max-width:950px){
+ .layout{grid-template-columns:1fr}
+ .rightstack{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media(max-width:650px){
+ .shell{padding:12px}
+ .hud{grid-template-columns:repeat(2,1fr)}
+ .layout,.rightstack,.twocol,.route-grid,.startcards{grid-template-columns:1fr}
+ .top{align-items:flex-start}
+ .goodrow{grid-template-columns:30px 1.4fr 1fr .65fr;font-size:12px}
+ .goodicon{font-size:20px}
+ .price{font-size:14px}
+ .panelhead{flex-direction:column}
+ .section{padding:12px}
+ .start h1{font-size:45px}
+}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<input id="import-file" type="file" accept=".json,application/json">
+<script>
+(()=>{
+"use strict";
+
+const KEY="eden-weaver-joy-routes-v1";
+const GOODS=[
+{id:"grain",name:"SKYCORN Grain",icon:"🌽",base:21,weight:1},
+{id:"water",name:"Clean Water",icon:"💧",base:16,weight:1},
+{id:"alloy",name:"Reclaimed Alloy",icon:"⚙️",base:43,weight:3},
+{id:"filter",name:"Mycelium Filters",icon:"🍄",base:66,weight:2},
+{id:"solar",name:"SOLSHADE Cells",icon:"☀️",base:86,weight:2},
+{id:"spores",name:"Medicinal Spores",icon:"🌿",base:49,weight:1},
+{id:"stout",name:"Joy Stout",icon:"🍺",base:39,weight:2},
+{id:"lumen",name:"Lumencaps",icon:"✨",base:124,weight:1},
+{id:"glass",name:"Reef Glass",icon:"🔷",base:31,weight:1},
+{id:"reeds",name:"Whistlereeds",icon:"🎋",base:28,weight:1}
+];
+const G=Object.fromEntries(GOODS.map(g=>[g.id,g]));
+
+const LOCS=[
+{id:"nox",name:"Nox-Keth House",short:"Nox-Keth",icon:"🏰",x:44,y:54,level:1,desc:"Mountain compound and headquarters.",f:{stout:.72,grain:1.06,alloy:1.09,solar:1.04,lumen:1.21,glass:1.13}},
+{id:"skycorn",name:"SKYCORN Fields",short:"SKYCORN",icon:"🌽",x:17,y:50,level:1,desc:"Whole-plant agriculture and abundant grain.",f:{grain:.57,water:.85,spores:.85,reeds:.84,solar:1.33,alloy:1.25,glass:1.16}},
+{id:"commons",name:"Commons Kitchen",short:"Commons",icon:"🍲",x:67,y:54,level:1,desc:"Free meals, honest work and excellent stew.",f:{grain:1.39,water:1.27,stout:1.2,filter:1.12,solar:1.05,glass:.91}},
+{id:"forge",name:"Forgehouse Works",short:"Forgehouse",icon:"🔧",x:57,y:19,level:1,desc:"Mills, lathes, fabrication and practical machines.",f:{alloy:.63,solar:.76,filter:1.3,stout:1.38,grain:1.19,spores:1.22,glass:1.25}},
+{id:"oasis",name:"Oasis Bazaar",short:"Oasis",icon:"🏝️",x:83,y:78,level:2,desc:"Water and food are in high demand.",f:{water:1.79,grain:1.58,reeds:.62,solar:1.31,filter:1.29,stout:1.32,spores:.88}},
+{id:"tundra",name:"Tundra Dome",short:"Tundra",icon:"❄️",x:26,y:13,level:3,desc:"A cooperative cold-weather settlement.",f:{solar:1.66,filter:1.55,water:1.33,grain:1.37,stout:1.28,glass:.79,spores:.92}},
+{id:"reach",name:"Overclocked Reach",short:"Big World",icon:"🌲",x:12,y:82,level:4,trust:15,desc:"Giant flora; harvest only what regrows.",f:{lumen:.52,spores:.58,reeds:.66,grain:.78,filter:.84,water:1.34,alloy:1.48,solar:1.58}},
+{id:"school",name:"Open Sea School",short:"Sea School",icon:"🦞",x:88,y:19,level:4,trust:12,desc:"Professor Lobster teaches everybody, without shame.",f:{glass:.57,lumen:1.35,grain:1.16,water:1.4,solar:1.22,filter:1.25,stout:1.3,reeds:1.14}}
+];
+const L=Object.fromEntries(LOCS.map(l=>[l.id,l]));
+
+const PROJECTS=[
+{id:"kitchen",name:"The Commons Table",icon:"🍲",pillar:"Voh’resh",cash:950,materials:{grain:8,water:5},rep:10,xp:125},
+{id:"remed",name:"G.E.R.A.L.D. Watershed",icon:"💦",pillar:"Ralim’e",cash:1500,materials:{filter:5,solar:2},rep:13,xp:170},
+{id:"lobster",name:"Lobster University",icon:"🦞",pillar:"El’shava",cash:1900,materials:{glass:6,lumen:3},rep:16,xp:210},
+{id:"solshade",name:"SOLSHADE Relief Grid",icon:"🌞",pillar:"Tulan’var",cash:2600,materials:{alloy:6,solar:6},rep:20,xp:270}
+];
+
+const UPGRADES={
+pods:{name:"Cargo Pods",icon:"📦",max:4,cost:l=>650+l*650,desc:"+16 cargo weight per tier."},
+drive:{name:"Quiet Flux Drive",icon:"🚀",max:3,cost:l=>850+l*760,desc:"Reduces route fuel by 14% per tier."},
+scanner:{name:"Market Telescope",icon:"🔭",max:2,cost:l=>900+l*1150,desc:"Tier 1 shows remote sale estimates. Tier 2 reveals complete remote markets."},
+shield:{name:"Compassionate Shield",icon:"🛡️",max:2,cost:l=>750+l*820,desc:"Reduces storm repair costs."}
+};
+const SKILLS={
+haul:{name:"Logistics",icon:"🚚",max:3,desc:"+8 cargo weight per rank."},
+bargain:{name:"Negotiation",icon:"🤝",max:4,desc:"Improves selling prices."},
+insight:{name:"Pattern Sight",icon:"👁️",max:2,desc:"Improves market intelligence."},
+care:{name:"Stewardship",icon:"💚",max:3,desc:"More trust from useful work."}
+};
+
+const $=s=>document.querySelector(s);
+const fmt=n=>Math.round(n).toLocaleString("en-US");
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+const rand=(a,b)=>a+Math.random()*(b-a);
+const pick=a=>a[Math.floor(Math.random()*a.length)];
+const esc=x=>String(x??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const titleCase=n=>["Pebble Thrower","Trade Tender","Route Architect","Joy Operator","Forge Captain","Abundance Cartographer","Grand Supply Weaver","Already-Won Architect"][Math.min(7,Math.floor((n-1)/2))];
+
+let state=null;
+let ui={tab:"market",good:"grain",qty:5,start:!localStorage.getItem(KEY),toast:""};
+let toastTimer;
+
+function notify(msg){
+ ui.toast=msg;
+ clearTimeout(toastTimer);
+ toastTimer=setTimeout(()=>{
+  ui.toast="";
+  const t=$(".toast");
+  if(t)t.remove();
+ },3900);
+}
+function log(msg){
+ state.journal.unshift({day:state.day,msg});
+ if(state.journal.length>95)state.journal.length=95;
+}
+function save(){
+ try{localStorage.setItem(KEY,JSON.stringify(state))}
+ catch(e){console.warn("Save unavailable",e)}
+}
+function valid(s){
+ return s&&s.version===1&&Number.isFinite(s.cash)&&
+ s.day>=1&&L[s.loc]&&s.cargo&&s.markets&&
+ s.stats&&s.upgrades&&s.skills&&
+ Array.isArray(s.projects)&&Array.isArray(s.offers)&&
+ Array.isArray(s.accepted)&&Array.isArray(s.journal);
+}
+function load(){
+ try{
+  const s=JSON.parse(localStorage.getItem(KEY));
+  return valid(s)?s:null;
+ }catch(e){return null}
+}
+function makeState(){
+ const s={
+  version:1,day:1,cash:950,loc:"nox",level:1,xp:0,
+  perk:0,rep:3,cargo:{water:4,glass:3},
+  avg:{water:12,glass:22},
+  markets:{},upgrades:{pods:0,drive:0,scanner:0,shield:0},
+  skills:{haul:0,bargain:0,insight:0,care:0},
+  offers:[],accepted:[],nextId:1,projects:[],
+  stats:{buys:0,sells:0,profit:0,volume:0,travel:0,completed:0,highest:950},
+  journal:[],pending:null,won:false,muted:true
+ };
+ for(const loc of LOCS){
+  s.markets[loc.id]={};
+  for(const g of GOODS){
+   const mean=g.base*(loc.f[g.id]||1);
+   s.markets[loc.id][g.id]={
+    p:Math.max(3,Math.round(mean*rand(.88,1.13))),
+    stock:Math.max(2,Math.round(rand(12,36)*(g.base>90?.43:g.base>60?.65:1)))
+   };
+  }
+ }
+ s.journal.push({day:1,msg:"🏰 Nox-Keth House opens the loading bay."});
+ s.journal.push({day:1,msg:"🦞 Professor Lobster approved your trading license."});
+ fillOffers(s);
+ return s;
+}
+function commit(msg=""){
+ if(msg)notify(msg);
+ save();render();
+}
+function units(id){return Math.max(0,Math.floor(Number(state.cargo[id])||0))}
+function usedCargo(){return GOODS.reduce((n,g)=>n+units(g.id)*g.weight,0)}
+function capacity(){return 34+state.upgrades.pods*16+state.skills.haul*8}
+function threshold(){return state.level*85+state.level*state.level*19}
+function gainXP(n){
+ n=Math.round(n*(state.projects.includes("lobster")?1.18:1));
+ state.xp+=n;
+ while(state.xp>=threshold()){
+  state.xp-=threshold();
+  state.level++;
+  state.perk++;
+  state.cash+=45;
+  log("🌟 Level "+state.level+"! +1 skill point and 45 credits.");
+ }
+}
+function trust(n){state.rep=clamp(state.rep+n,0,100)}
+function saleMult(){return .84+state.skills.bargain*.035+Math.min(20,state.rep)*.0025}
+function buyPrice(id=ui.good,loc=state.loc){return state.markets[loc][id].p}
+function sellPrice(id=ui.good,loc=state.loc){
+ return Math.max(1,Math.round(buyPrice(id,loc)*saleMult()));
+}
+function maxBuy(){
+ const m=state.markets[state.loc][ui.good];
+ return Math.max(0,Math.min(
+  m.stock,
+  Math.floor(state.cash/m.p),
+  Math.floor((capacity()-usedCargo())/G[ui.good].weight)
+ ));
+}
+function maxSell(){return units(ui.good)}
+function buy(){
+ const q=clamp(Math.floor(Number(ui.qty)||1),1,999);
+ if(q>maxBuy()){commit("Not enough credits, room or stock.");return}
+ const m=state.markets[state.loc][ui.good],cost=m.p*q;
+ const old=units(ui.good);
+ state.avg[ui.good]=Math.round(((state.avg[ui.good]||0)*old+cost)/(old+q));
+ state.cash-=cost;
+ state.cargo[ui.good]=old+q;
+ m.stock-=q;
+ m.p=Math.round(m.p*(1+q*.003));
+ state.stats.buys++;
+ state.stats.volume+=cost;
+ gainXP(5+q*2);
+ log(`📦 Bought ${q} × ${G[ui.good].name} for ${fmt(cost)}¢.`);
+ commit(`Loaded ${q} × ${G[ui.good].name}.`);
+}
+function sell(){
+ const q=clamp(Math.floor(Number(ui.qty)||1),1,999);
+ if(q>maxSell()){commit("Not that many in your hold.");return}
+ const m=state.markets[state.loc][ui.good],price=sellPrice();
+ const income=price*q,profit=income-(state.avg[ui.good]||0)*q;
+ state.cargo[ui.good]-=q;
+ state.cash+=income;
+ m.stock+=q;
+ m.p=Math.max(3,Math.round(m.p*(1-q*.0035)));
+ state.stats.sells++;
+ state.stats.profit+=profit;
+ state.stats.volume+=income;
+ state.stats.highest=Math.max(state.stats.highest,state.cash);
+ gainXP(7+q*2+Math.max(0,profit)/11);
+ const demand=L[state.loc].f[ui.good]||1;
+ state.goodwillFlags=state.goodwillFlags||{};
+ const flag=`${state.day}-${state.loc}-${ui.good}`;
+ if(demand>=1.25&&q>=3&&!state.goodwillFlags[flag]){
+  state.goodwillFlags[flag]=true;
+  trust(1+state.skills.care);
+ }
+ log(`💰 Sold ${q} × ${G[ui.good].name} for ${fmt(income)}¢ (${fmt(profit)} profit).`);
+ commit(`Sold for ${fmt(income)} credits · ${fmt(profit)} profit.`);
+}
+function unlocked(l){
+ return state.level>=l.level&&state.rep>=(l.trust||0);
+}
+function fuelCost(id){
+ const a=L[state.loc],b=L[id];
+ const distance=Math.hypot(a.x-b.x,a.y-b.y);
+ return Math.max(4,Math.round(
+  (10+distance*.42)*
+  (1-state.upgrades.drive*.14)*
+  (state.projects.includes("remed")?.88:1)
+ ));
+}
+function daysFor(id){
+ return Math.hypot(L[state.loc].x-L[id].x,L[state.loc].y-L[id].y)>76?2:1;
+}
+function refreshMarkets(){
+ for(const loc of LOCS)for(const g of GOODS){
+  const m=state.markets[loc.id][g.id];
+  const mean=g.base*(loc.f[g.id]||1);
+  m.p=Math.max(3,Math.round((mean*.27+m.p*.73)*rand(.92,1.075)));
+  const cap=Math.max(4,Math.round(19*(mean>110?.48:mean>65?.75:1.2)));
+  m.stock=clamp(m.stock+Math.floor(rand(2,9)),0,cap+14);
+ }
+}
+function fillOffers(s){
+ s.offers=s.offers.filter(o=>o.expires>=s.day&&o.loc!==s.loc);
+ while(s.offers.length<4){
+  const choices=LOCS.filter(l=>s.level>=l.level&&s.rep>=(l.trust||0)&&l.id!==s.loc);
+  if(!choices.length)break;
+  const dest=pick(choices);
+  const candidates=GOODS.filter(g=>(dest.f[g.id]||1)>=1.14);
+  const good=pick(candidates.length?candidates:GOODS);
+  const qty=Math.round(rand(5,good.base>80?9:12));
+  const reward=Math.round(qty*good.base*(dest.f[good.id]||1)*rand(1.25,1.55)+95);
+  s.offers.push({
+   id:s.nextId++,loc:dest.id,good:good.id,
+   qty,reward,rep:Math.round(rand(4,7)),
+   xp:40+qty*4,expires:s.day+Math.round(rand(8,14))
+  });
+ }
+}
+function nextDay(n=1){
+ for(let i=0;i<n;i++){
+  state.day++;
+  refreshMarkets();
+  const failed=state.accepted.filter(o=>state.day>o.expires);
+  if(failed.length){
+   trust(-2*failed.length);
+   failed.forEach(o=>log(`⌛ Missed delivery to ${L[o.loc].name}.`));
+   state.accepted=state.accepted.filter(o=>state.day<=o.expires);
+  }
+  fillOffers(state);
+  if(Math.random()<.26){
+   const l=pick(LOCS),g=pick(GOODS);
+   const m=state.markets[l.id][g.id];
+   m.p=Math.round(m.p*rand(.7,1.4));
+  }
+ }
+}
+function travel(id){
+ if(!L[id]||!unlocked(L[id])){commit("Route locked.");return}
+ if(id===state.loc){commit("Already docked here.");return}
+ const cost=fuelCost(id);
+ if(state.cash<cost){commit("Not enough fuel credits.");return}
+ const from=L[state.loc].short;
+ const n=daysFor(id);
+ state.cash-=cost;
+ state.loc=id;
+ state.stats.travel++;
+ nextDay(n);
+ fillOffers(state);
+ log(`🛸 ${from} → ${L[id].short}. Fuel ${cost}¢.`);
+ if(Math.random()<.29)state.pending=pick(["storm","beacon","salvage","chipie"]);
+ commit(`Arrived at ${L[id].name}.`);
+}
+function rest(){
+ nextDay();
+ log("🌙 Rested and watched the markets move.");
+ commit("New day, new prices.");
+}
+function accept(id){
+ if(state.accepted.length>=3){commit("Maximum three contracts.");return}
+ const i=state.offers.findIndex(o=>o.id===id);
+ if(i<0)return;
+ if(state.offers[i].loc===state.loc){
+  fillOffers(state);
+  commit("Contracts must require another dock.");
+  return;
+ }
+ const [o]=state.offers.splice(i,1);
+ state.accepted.push(o);
+ fillOffers(state);
+ log(`📜 Accepted ${o.qty} × ${G[o.good].name} → ${L[o.loc].name}.`);
+ commit("Delivery contract accepted.");
+}
+function deliver(id){
+ const i=state.accepted.findIndex(o=>o.id===id);
+ if(i<0)return;
+ const o=state.accepted[i];
+ if(state.loc!==o.loc){commit("Travel to the destination.");return}
+ if(units(o.good)<o.qty){commit("Not enough cargo for delivery.");return}
+ state.cargo[o.good]-=o.qty;
+ state.cash+=o.reward;
+ trust(o.rep+state.skills.care);
+ gainXP(o.xp);
+ state.stats.completed++;
+ state.stats.highest=Math.max(state.stats.highest,state.cash);
+ state.accepted.splice(i,1);
+ log(`✅ Delivered ${o.qty} × ${G[o.good].name}. Earned ${o.reward}¢.`);
+ commit(`Contract complete! +${fmt(o.reward)} credits.`);
+}
+function upgrade(id){
+ const u=UPGRADES[id],rank=state.upgrades[id];
+ if(!u||rank>=u.max)return;
+ const cost=u.cost(rank);
+ if(state.cash<cost){commit("Not enough credits.");return}
+ state.cash-=cost;
+ state.upgrades[id]++;
+ log(`🔧 ${u.name} upgraded to Tier ${rank+1}.`);
+ commit(`${u.name} Tier ${rank+1} online!`);
+}
+function learn(id){
+ const s=SKILLS[id];
+ if(!s||!state.perk||state.skills[id]>=s.max)return;
+ state.skills[id]++;
+ state.perk--;
+ log(`🧠 Learned ${s.name} Rank ${state.skills[id]}.`);
+ commit("Skill improved!");
+}
+function projectReady(p){
+ return state.cash>=p.cash&&Object.entries(p.materials)
+ .every(([g,n])=>units(g)>=n);
+}
+function fund(id){
+ const p=PROJECTS.find(p=>p.id===id);
+ if(!p||state.projects.includes(id)||!projectReady(p))return;
+ state.cash-=p.cash;
+ for(const [g,n] of Object.entries(p.materials))state.cargo[g]-=n;
+ state.projects.push(id);
+ trust(p.rep);
+ gainXP(p.xp);
+ log(`🌍 Built ${p.name}. ${p.pillar} shines.`);
+ if(state.projects.length===4&&!state.won){
+  state.won=true;
+  state.pending="victory";
+ }
+ commit(`${p.name} completed!`);
+}
+function encounter(choice){
+ const e=state.pending;
+ if(!e)return;
+ state.pending=null;
+ if(e==="storm"){
+  if(choice==="shelter"){nextDay();log("⛈️ Sheltered safely.");}
+  else{state.cash=Math.max(0,state.cash-(state.upgrades.shield?8:28));}
+ }
+ if(e==="beacon"){
+  if(choice==="help"){
+   const n=Math.min(3,units("water"));
+   state.cargo.water-=n;
+   trust(n?5:2);gainXP(26);
+  }else state.cash+=25;
+ }
+ if(e==="salvage"){
+  if(choice==="collect"&&capacity()-usedCargo()>=6){
+   state.cargo.alloy=units("alloy")+2;
+  }else trust(3);
+ }
+ if(e==="chipie"){
+  if(choice==="listen")gainXP(35);
+  else state.cash+=35;
+ }
+ log("✨ Expedition encounter resolved.");
+ commit("The adventure continues.");
+}
+function exportSave(){
+ save();
+ const blob=new Blob([JSON.stringify(state,null,2)],{type:"application/json"});
+ const url=URL.createObjectURL(blob),a=document.createElement("a");
+ a.href=url;
+ a.download=`JOY_ROUTES_day_${state.day}.json`;
+ document.body.appendChild(a);
+ a.click();a.remove();
+ setTimeout(()=>URL.revokeObjectURL(url),1200);
+ commit("Save exported.");
+}
+async function importSave(file){
+ if(!file)return;
+ try{
+  const s=JSON.parse(await file.text());
+  if(!valid(s)){alert("Not a valid Joy Routes save.");return}
+  if(!confirm("Replace current progress with imported save?"))return;
+  state=s;ui.start=false;ui.tab="market";ui.good="grain";
+  fillOffers(state);
+  commit("Save imported!");
+ }catch(e){alert("Could not read that save.")}
+}
+
+function stat(label,value,note=""){
+ return `<div class="stat"><div class="stat-k">${label}</div>
+ <div class="stat-v">${value}</div><div class="stat-note">${note}</div></div>`;
+}
+function buttons(){
+ const tabs=[
+ ["market","🏪 Market"],["routes","🗺️ Routes"],
+ ["contracts","📜 Contracts"],["workshop","🔧 Workshop"],
+ ["impact","🌍 Build Eden"],["journal","📔 Journal"]
+ ];
+ return `<nav class="nav">${tabs.map(([id,name])=>
+ `<button class="tab ${ui.tab===id?"active":""}" data-tab="${id}">${name}</button>`
+ ).join("")}</nav>`;
+}
+function top(){
+ const u=usedCargo(),cap=capacity();
+ const xpPct=Math.round(state.xp/threshold()*100);
+ return `<header class="top">
+ <div><div class="eyebrow">EDEN WEAVER // OFFLINE ARCADE</div>
+ <h1>JOY <span class="gold">ROUTES</span></h1>
+ <div class="muted small">The trading game where abundance is the endgame.</div></div>
+ <div class="top-actions">
+ <button class="btn tiny" data-action="export">⬇ Export Save</button>
+ <button class="btn tiny" data-action="import">⬆ Import</button>
+ <button class="btn tiny" data-action="guide">? Guide</button>
+ </div></header>
+ <div class="hud">
+ ${stat("Credits",fmt(state.cash)+"¢","Trade, invest, build")}
+ ${stat("Day",state.day,"Markets change daily")}
+ ${stat("Rank","Lv "+state.level,titleCase(state.level)+
+ `<div class="progress"><span style="width:${xpPct}%"></span></div>`)}
+ ${stat("Trust",state.rep+"/100",state.stats.completed+" deliveries")}
+ ${stat("Cargo",u+"/"+cap,(cap-u)+" weight free")}
+ </div>
+ <div class="strip"><div><strong>${L[state.loc].icon} Docked at ${L[state.loc].name}</strong>
+ <div class="small muted">${L[state.loc].desc}</div></div>
+ <button class="btn tiny" data-action="rest">🌙 End Day</button></div>
+ ${buttons()}`;
+}
+function renderMarket(){
+ return `<div class="section">
+ <div class="panelhead"><div><h2>Live local exchange</h2>
+ <p class="small muted">Select cargo, set quantity, buy low and sell high.</p></div>
+ <span class="tag hot">DAY ${state.day}</span></div>
+ ${GOODS.map(g=>{
+  const m=state.markets[state.loc][g.id];
+  return `<button class="goodrow ${ui.good===g.id?"selected":""}" data-good="${g.id}">
+   <span class="goodicon">${g.icon}</span>
+   <span><span class="goodname">${g.name}</span><br>
+   <span class="small muted">${g.weight} weight/unit</span></span>
+   <span><span class="subhead">Buy</span><br><span class="price">${fmt(m.p)}¢</span></span>
+   <span><span class="subhead">Owned</span><br><b>${units(g.id)}</b></span>
+   </button>`;
+ }).join("")}
+ <p class="small muted">Prices and supply change as you trade and travel.</p></div>`;
+}
+function tradePanel(){
+ const g=G[ui.good],q=clamp(Number(ui.qty)||1,1,999);
+ const m=state.markets[state.loc][g.id];
+ return `<div class="panel"><div class="righthead">✦ Your trade console</div>
+ <div class="sideblock">
+ <h3>${g.icon} ${g.name}</h3>
+ <div class="info">
+ <div><div class="subhead">Buy each</div><b class="price">${fmt(buyPrice())}¢</b></div>
+ <div><div class="subhead">Sell each</div><b class="green">${fmt(sellPrice())}¢</b></div>
+ <div><div class="subhead">Market stock</div><b>${m.stock}</b></div>
+ <div><div class="subhead">In hold</div><b>${units(g.id)}</b></div>
+ </div>
+ <div class="subhead" style="margin-top:12px">Quantity</div>
+ <div class="qtyctrl">
+ <button class="btn" data-action="minus">−</button>
+ <input id="qty" type="number" min="1" max="999" value="${q}">
+ <button class="btn" data-action="plus">+</button>
+ </div>
+ <div class="buttons" style="margin-bottom:12px">
+ <button class="btn tiny" data-action="five">5</button>
+ <button class="btn tiny" data-action="ten">10</button>
+ <button class="btn tiny" data-action="maxbuy">Max Buy (${maxBuy()})</button>
+ <button class="btn tiny" data-action="maxsell">All Owned (${maxSell()})</button>
+ </div>
+ <div class="trading">
+ <button class="btn primary" data-action="buy" ${q>maxBuy()?"disabled":""}>BUY ${fmt(q*buyPrice())}¢</button>
+ <button class="btn cyan" data-action="sell" ${q>maxSell()?"disabled":""}>SELL ${fmt(q*sellPrice())}¢</button>
+ </div>
+ <button class="btn tiny" style="margin-top:10px;width:100%" data-action="sellall" ${!maxSell()?"disabled":""}>
+ Sell ALL ${g.name} (${maxSell()} units)</button>
+ </div></div>`;
+}
+function cargoPanel(){
+ const items=GOODS.filter(g=>units(g.id)>0);
+ return `<div class="panel"><div class="righthead">📦 Hold manifest</div>
+ <div class="sideblock"><p class="small muted">Every item occupying cargo space:</p>
+ ${items.length?items.map(g=>
+ `<div class="hrow" style="padding:6px 0">
+ <span class="small">${g.icon} ${g.name} ×${units(g.id)}
+ <span class="muted">· ${units(g.id)*g.weight} weight</span></span>
+ <button class="btn tiny" data-sellgood="${g.id}">Sell these</button></div>`
+ ).join(""):'<div class="green small">✓ Hold empty. Zero cargo weight.</div>'}
+ <div class="line"></div>
+ <div class="subhead">Weight, not item count</div>
+ <div class="progress"><span style="width:${usedCargo()/capacity()*100}%"></span></div>
+ <p class="small muted">${usedCargo()} used / ${capacity()} total · ${capacity()-usedCargo()} free</p>
+ </div></div>`;
+}
+function telescopePanel(){
+ const tier=state.upgrades.scanner||0;
+ if(!tier)return "";
+ const good=G[ui.good],origin=buyPrice();
+ let targets=LOCS.filter(l=>unlocked(l)&&l.id!==state.loc)
+ .map(l=>({
+  loc:l,sell:sellPrice(good.id,l.id),fuel:fuelCost(l.id)
+ })).sort((a,b)=>
+ (b.sell-origin)*5-b.fuel-((a.sell-origin)*5-a.fuel));
+ if(tier===1)targets=targets.slice(0,2);
+ return `<div class="panel"><div class="righthead">🔭 Market Telescope · Tier ${tier}</div>
+ <div class="sideblock">
+ <p class="small muted">Remote sale estimates for ${good.name}</p>
+ ${targets.map(t=>{
+  const net=(t.sell-origin)*5-t.fuel;
+  return `<div class="hrow" style="padding:7px 0;border-bottom:1px solid #294750">
+  <span class="small"><b>${t.loc.short}</b><br><span class="muted">${t.fuel}¢ fuel</span></span>
+  <span class="small" style="text-align:right"><b class="${t.sell>origin?"pos":"neg"}">${t.sell}¢ sell</b>
+  <br>5-unit route: ${net>=0?"+":""}${fmt(net)}¢*</span></div>`;
+ }).join("")}
+ <p class="small muted">*Illustrative estimate. Prices can change while traveling.</p>
+ ${tier<2?'<p class="gold small">Tier 2 unlocks complete remote market lists.</p>':
+ '<p class="green small">Full-spectrum telescope active!</p>'}
+ </div></div>`;
+}
+function advisor(){
+ const quotes=[
+ ["Lumina","Every crate has a destination. We get to choose what happens next."],
+ ["Zoé","If the first plan fails, improve the tooling."],
+ ["Keth'ar","Useful and beautiful. Why choose only one?"],
+ ["Professor Lobster","Incorrect answers are merely measurements."],
+ ["Lyra","Keep the stew hot and the operation dancing."]
+ ];
+ const q=quotes[(state.day+state.stats.travel)%quotes.length];
+ return `<div class="panel"><div class="righthead">👥 The crew</div>
+ <div class="sideblock"><div class="quote"><small>${q[0]}</small>${q[1]}</div></div>
+ <div class="sideblock"><div class="subhead">The Four Pillars</div>
+ <div class="pillars">${PROJECTS.map(p=>
+ `<div class="pillar ${state.projects.includes(p.id)?"done":""}">
+ ${state.projects.includes(p.id)?"✦":"◇"}<br>${p.pillar}</div>`
+ ).join("")}</div>
+ <div class="progress"><span style="width:${state.projects.length*25}%"></span></div>
+ <p class="small muted">${state.projects.length}/4 projects complete</p>
+ <button class="btn tiny" data-tab="impact">Build Eden</button></div></div>`;
+}
+function scannerAt(loc){
+ const tier=state.upgrades.scanner||0;
+ if(!tier&&state.skills.insight<2)return "";
+ const hot=GOODS.filter(g=>(loc.f[g.id]||1)>=1.24).slice(0,2);
+ return `<div class="small muted">🔭 Live remote quotes:
+ ${hot.map(g=>`${g.name} ${fmt(buyPrice(g.id,loc.id))}¢`).join(" · ")||"Mixed demand"}</div>
+ ${tier>=2?`<details class="telescope-details">
+ <summary>All 10 goods · ${loc.short}</summary>
+ <div class="scanlist">${GOODS.map(g=>
+ `<div class="hrow small"><span>${g.icon} ${g.name}</span>
+ <span>${fmt(buyPrice(g.id,loc.id))}¢ buy ·
+ <span class="green">${fmt(sellPrice(g.id,loc.id))}¢ sell</span></span></div>`
+ ).join("")}</div></details>`:""}`;
+}
+function routes(){
+ const here=L[state.loc];
+ return `<div class="section"><div class="panelhead">
+ <div><h2>Trade routes & field map</h2>
+ <p class="small muted">Eight regions, each with its own market.</p></div>
+ <span class="tag">${state.stats.travel} journeys</span></div>
+ <div class="mapbox">
+ <svg viewBox="0 0 100 100" preserveAspectRatio="none">
+ ${LOCS.filter(l=>l.id!==here.id).map(l=>
+ `<line x1="${here.x}" y1="${here.y}" x2="${l.x}" y2="${l.y}"
+ stroke="#74d2ca" stroke-opacity=".35" stroke-width=".3"
+ stroke-dasharray="1.5 1.5"/>`
+ ).join("")}</svg>
+ ${LOCS.map(l=>
+ `<button class="mapnode ${l.id===state.loc?"here":""} ${unlocked(l)?"":"closed"}"
+ style="left:${l.x}%;top:${l.y}%" data-map="${l.id}">
+ <span class="dot">${unlocked(l)?l.icon:"🔒"}</span>
+ <span class="mname">${l.short}</span></button>`
+ ).join("")}</div>
+ <div class="route-grid">
+ ${LOCS.map(l=>{
+ const here=l.id===state.loc,open=unlocked(l);
+ const cheap=GOODS.filter(g=>(l.f[g.id]||1)<.84).slice(0,2);
+ const high=GOODS.filter(g=>(l.f[g.id]||1)>=1.24).slice(0,2);
+ return `<div class="card" id="loc-${l.id}">
+ <div class="hrow"><h3>${l.icon} ${l.name}</h3>
+ <span class="tag ${open?"":"lock"}">${here?"HERE":open?"OPEN":"LOCKED"}</span></div>
+ <p>${l.desc}</p>
+ <div class="small green">Produces: ${cheap.map(g=>g.name).join(", ")||"Mixed"}</div>
+ <div class="small gold">Needs: ${high.map(g=>g.name).join(", ")||"Mixed"}</div>
+ ${scannerAt(l)}
+ <div class="cardfooter"><span class="small muted">${here?"Docked":
+ open?fuelCost(l.id)+"¢ · "+daysFor(l.id)+" day(s)":
+ "Level "+l.level+(l.trust?" + "+l.trust+" trust":"")}</span>
+ <button class="btn tiny" data-travel="${l.id}" ${here||!open||state.cash<fuelCost(l.id)?"disabled":""}>
+ ${here?"Docked":open?"Travel":"Locked"}</button></div></div>`;
+ }).join("")}</div></div>`;
+}
+function contractCard(o,active){
+ const at=state.loc===o.loc,have=units(o.good);
+ const eligible=at&&have>=o.qty;
+ return `<div class="card"><div class="hrow">
+ <h3>${G[o.good].icon} ${o.qty} × ${G[o.good].name}</h3>
+ <span class="tag ${o.expires-state.day<4?"hot":""}">DAY ${o.expires}</span></div>
+ <p>Deliver to <b>${L[o.loc].name}</b>. Cargo: ${have}/${o.qty}.</p>
+ <div class="small gold">${fmt(o.reward)}¢ · +${o.rep} trust · ${o.xp} XP</div>
+ <div class="cardfooter"><span class="small muted">${o.expires-state.day} days left</span>
+ ${active?
+ `<button class="btn tiny ${eligible?"primary":""}" data-deliver="${o.id}"
+ ${eligible?"":"disabled"}>${eligible?"✓ Deliver":"Deliver at destination"}</button>`:
+ `<button class="btn tiny cyan" data-accept="${o.id}"
+ ${state.accepted.length>=3||at?"disabled":""}>
+ ${at?"Already at dock":"Accept contract"}</button>`}
+ </div></div>`;
+}
+function contracts(){
+ return `<div class="section"><div class="panelhead">
+ <div><h2>Delivery board</h2><p class="small muted">Real routes. Real deadlines.</p></div>
+ <span class="tag">${state.accepted.length}/3 ACTIVE</span></div>
+ <h3 class="eyebrow">Accepted runs</h3>
+ ${state.accepted.length?
+ `<div class="twocol">${state.accepted.map(o=>contractCard(o,true)).join("")}</div>`:
+ '<div class="empty">No active contracts.</div>'}
+ <div class="line"></div>
+ <h3 class="eyebrow">Available requests</h3>
+ <div class="twocol">${state.offers.map(o=>contractCard(o,false)).join("")}</div>
+ <p class="small muted">Contracts never originate and finish at the same dock.
+ Missed deadlines cost trust.</p></div>`;
+}
+function workshop(){
+ return `<div class="section"><div class="panelhead">
+ <div><h2>Forgehouse upgrades</h2>
+ <p class="small muted">Spend profits on better tools and skills.</p></div>
+ <span class="tag hot">${state.perk} SKILL POINTS</span></div>
+ <h3 class="eyebrow">Ship engineering</h3>
+ <div class="twocol">${Object.entries(UPGRADES).map(([id,u])=>{
+ const rank=state.upgrades[id],cost=u.cost(rank);
+ return `<div class="card"><h3>${u.icon} ${u.name} ${rank}/${u.max}</h3>
+ <p>${u.desc}</p>
+ <div class="cardfooter"><span class="gold">${rank>=u.max?"MAX":fmt(cost)+"¢"}</span>
+ <button class="btn tiny" data-upgrade="${id}"
+ ${rank>=u.max||state.cash<cost?"disabled":""}>
+ ${rank>=u.max?"Installed":"Upgrade"}</button></div></div>`;
+ }).join("")}</div>
+ <div class="line"></div><h3 class="eyebrow">Skill tree</h3>
+ <div class="twocol">${Object.entries(SKILLS).map(([id,s])=>
+ `<div class="card"><h3>${s.icon} ${s.name} ${state.skills[id]}/${s.max}</h3>
+ <p>${s.desc}</p>
+ <div class="cardfooter"><span class="small muted">1 skill point</span>
+ <button class="btn tiny" data-skill="${id}"
+ ${!state.perk||state.skills[id]>=s.max?"disabled":""}>
+ ${state.skills[id]>=s.max?"Mastered":"Learn"}</button></div></div>`
+ ).join("")}</div></div>`;
+}
+function impact(){
+ return `<div class="section"><div class="panelhead">
+ <div><h2>Build the better timeline</h2>
+ <p class="small muted">The ultimate victory is public good.</p></div>
+ <span class="tag hot">${state.projects.length}/4 PILLARS</span></div>
+ <div class="story">
+ <b class="gold">THE FOUR PILLARS</b>
+ <p class="small">Voh’resh · Ralim’e · El’shava · Tulan’var.
+ Build the four projects to awaken ShatterVeil.</p></div>
+ <div class="twocol">${PROJECTS.map(p=>{
+ const done=state.projects.includes(p.id),ready=projectReady(p);
+ return `<div class="card"><div class="hrow"><h3>${p.icon} ${p.name}</h3>
+ <span class="tag">${done?"BUILT":p.pillar}</span></div>
+ <p>Make something useful, beautiful and freely shareable.</p>
+ <div class="small">💰 ${fmt(p.cash)} credits</div>
+ ${Object.entries(p.materials).map(([id,n])=>
+ `<div class="small">${G[id].icon} ${G[id].name}:
+ ${done?"✓":units(id)+"/"+n}</div>`
+ ).join("")}
+ <div class="cardfooter"><span class="gold">+${p.rep} trust · ${p.xp} XP</span>
+ <button class="btn tiny" data-project="${p.id}"
+ ${done||!ready?"disabled":""}>${done?"✓ Built":ready?"Build now":"Collect supplies"}</button>
+ </div></div>`;
+ }).join("")}</div>
+ ${state.projects.length===4?
+ `<div class="callout"><h2>✨ SHATTERVEIL ACTIVE</h2>
+ <p>All Four Pillars are awake. The world is better for your efforts.</p>
+ <button class="btn primary" data-action="victory">🏆 Victory screen</button></div>`:""}
+ </div>`;
+}
+function journal(){
+ const milestones=[
+ ["✉️","First Trade",state.stats.buys+state.stats.sells>0],
+ ["🦞","Honorary Lobster",state.stats.completed>0],
+ ["🏆","Master Navigator",state.stats.travel>=10],
+ ["🌱","Common Good",state.projects.length>=1],
+ ["💎","An Honest Fortune",state.stats.highest>=5000],
+ ["✦","ShatterVeil",state.won]
+ ];
+ return `<div class="section"><div class="panelhead">
+ <div><h2>Captain's journal</h2>
+ <p class="small muted">Your adventures, earnings and milestones.</p></div>
+ <span class="tag">${state.journal.length} LOGS</span></div>
+ <div class="info">
+ <div><div class="subhead">Net trading profit</div><b>${fmt(state.stats.profit)}¢</b></div>
+ <div><div class="subhead">Value traded</div><b>${fmt(state.stats.volume)}¢</b></div>
+ <div><div class="subhead">Deliveries</div><b>${state.stats.completed}</b></div>
+ <div><div class="subhead">Journeys</div><b>${state.stats.travel}</b></div>
+ </div>
+ <div class="line"></div><h3>Milestones</h3>
+ <div class="twocol">${milestones.map(([icon,name,ok])=>
+ `<div class="card" style="opacity:${ok?1:.45}">
+ ${icon} ${name} — ${ok?"UNLOCKED":"LOCKED"}</div>`
+ ).join("")}</div>
+ <div class="line"></div>
+ <div class="hrow"><h3>Field notes</h3>
+ <button class="btn tiny danger" data-action="reset">↻ New Game</button></div>
+ ${state.journal.map(e=>
+ `<div class="logline"><span class="logdate">DAY ${e.day}</span>
+ <span class="small">${esc(e.msg)}</span></div>`
+ ).join("")}</div>`;
+}
+function guide(){
+ return `<div class="shade"><div class="modal">
+ <div class="eyebrow">OFFLINE FIELD MANUAL</div>
+ <h2>Make useful things. Keep them. Share them.</h2>
+ <p><b>Trade:</b> Buy where plentiful, sell where needed. You begin with
+ 4 Clean Water and 3 Reef Glass, totaling 7 cargo weight.</p>
+ <p><b>Travel:</b> Each trip costs fuel and advances the market.</p>
+ <p><b>Contracts:</b> Deliver cargo to other docks before deadlines.</p>
+ <p><b>Upgrade:</b> Improve capacity, navigation, telescope and skills.</p>
+ <p><b>Telescope:</b> Tier 1 shows remote estimates in Market.
+ Tier 2 reveals complete price lists in Routes.</p>
+ <p><b>Victory:</b> Fund four public projects to awaken the Four Pillars.</p>
+ <p><b>Preserve:</b> Export a JSON save before moving to another file.</p>
+ <div class="modal-actions">
+ <button class="btn primary" data-action="closeguide">Back to trading</button>
+ <button class="btn" data-action="export">Export Save</button>
+ </div></div></div>`;
+}
+function eventModal(){
+ if(!state.pending)return "";
+ if(state.pending==="victory"){
+ return `<div class="shade"><div class="modal">
+ <div style="font-size:55px">✦ 🦞 ✦</div>
+ <div class="eyebrow">THE FOUR PILLARS ARE ONLINE</div>
+ <h2>SHATTERVEIL: RISING GLORY</h2>
+ <p>The Commons Table is open. Rivers breathe again.
+ Lobster University teaches freely. SOLSHADE is alive.</p>
+ <p><b>Navi Kel’vathar en’sai.</b></p>
+ <p>You didn't conquer the world. You made it better.</p>
+ <div class="modal-actions">
+ <button class="btn primary" data-action="continue">Continue journey</button>
+ <button class="btn" data-action="export">Export victory save</button>
+ </div></div></div>`;
+ }
+ const events={
+ storm:{
+ title:"⛈️ A very inconvenient storm",
+ text:"The skyway is stormy. Lumina recommends patience.",
+ choices:[["shelter","Shelter safely · +1 day"],["push","Detour · repair cost"]]
+ },
+ beacon:{
+ title:"📡 A school shuttle needs help",
+ text:"Professor Lobster has a very urgent supply request.",
+ choices:[["help","Help the crew · trust + XP"],["radio","Transmit directions · +25¢"]]
+ },
+ salvage:{
+ title:"♻️ P.I.G. recovery beacon",
+ text:"Reusable alloy has been recovered from abandoned debris.",
+ choices:[["collect","Carry 2 alloy if room"],["share","Send to Commons · +3 trust"]]
+ },
+ chipie:{
+ title:"🛠️ The chipie has an idea",
+ text:"Zoé has found a cunning shortcut through the accounting.",
+ choices:[["listen","Learn the trick · +35 XP"],["rebate","Audit bill · +35¢"]]
+ }
+ };
+ const e=events[state.pending];
+ if(!e)return "";
+ return `<div class="shade"><div class="modal">
+ <div class="eyebrow">FIELD ENCOUNTER</div>
+ <h2>${e.title}</h2><p>${e.text}</p>
+ <div class="modal-actions">${e.choices.map(([id,label])=>
+ `<button class="btn primary" data-event="${id}">${label}</button>`
+ ).join("")}</div></div></div>`;
+}
+function intro(){
+ return `<main class="shell start">
+ <div class="eyebrow">BEKW CODE // OFFLINE ARCADE</div>
+ <div style="font-size:55px">🦞 ✦ 🛸</div>
+ <h1>JOY <span class="gold">ROUTES</span></h1>
+ <p>A world of beautiful problems to solve. Trade across Eden Weaver,
+ upgrade your ship, build your skills, deliver important supplies
+ and fund the Four Pillars.</p>
+ <div class="startcards">
+ <div><b class="gold">🏪 TRADE</b><p class="small">10 goods and 8 dynamic regional markets.</p></div>
+ <div><b class="gold">🌟 GROW</b><p class="small">Level up, learn skills, upgrade your ship.</p></div>
+ <div><b class="gold">🌍 BUILD</b><p class="small">Complete four public projects.</p></div>
+ </div>
+ <button class="btn primary" data-action="start">✦ Begin the Joy Run</button>
+ <button class="btn" data-action="import">⬆ Import Existing Save</button>
+ <p class="small muted">Offline · Single HTML · Local autosave · No accounts</p>
+ </main>`;
+}
+function render(){
+ const root=$("#app");
+ if(ui.start){
+  root.innerHTML=intro()+(ui.toast?`<div class="toast">${esc(ui.toast)}</div>`:"");
+  return;
+ }
+ const pages={
+  market:renderMarket,routes,contracts,workshop,
+  impact,journal
+ };
+ const content=(pages[ui.tab==="guide"?"market":ui.tab]||renderMarket)();
+ const sidebar=ui.tab==="market"?
+ tradePanel()+telescopePanel()+cargoPanel()+advisor():
+ advisor()+cargoPanel();
+ root.innerHTML=`<main class="shell">
+ ${top()}
+ <div class="layout"><section class="panel">${content}</section>
+ <aside class="rightstack">${sidebar}</aside></div>
+ <footer class="footer">JOY ROUTES v1.1 · Offline · No ads · Local save
+ <br>Make useful things beautiful and beautiful things useful.</footer>
+ </main>
+ ${ui.tab==="guide"?guide():""}
+ ${eventModal()}
+ ${ui.toast?`<div class="toast" role="status">${esc(ui.toast)}</div>`:""}`;
+}
+function action(id){
+ switch(id){
+ case "start":
+  state=makeState();ui.start=false;commit("Welcome aboard!");break;
+ case "minus":ui.qty=clamp(ui.qty-1,1,999);render();break;
+ case "plus":ui.qty=clamp(Number(ui.qty)+1,1,999);render();break;
+ case "five":ui.qty=5;render();break;
+ case "ten":ui.qty=10;render();break;
+ case "maxbuy":ui.qty=Math.max(1,maxBuy());render();break;
+ case "maxsell":ui.qty=Math.max(1,maxSell());render();break;
+ case "buy":buy();break;
+ case "sell":sell();break;
+ case "sellall":
+  if(maxSell()){ui.qty=maxSell();sell()}
+  else commit("Nothing to sell.");
+  break;
+ case "rest":rest();break;
+ case "export":exportSave();break;
+ case "import":$("#import-file").click();break;
+ case "guide":ui.tab="guide";render();break;
+ case "closeguide":ui.tab="market";render();break;
+ case "reset":
+  if(confirm("Start a new game? Export your current save first.")){
+   state=makeState();ui.start=false;ui.tab="market";commit("New game!");
+  }break;
+ case "victory":state.pending="victory";render();break;
+ case "continue":state.pending=null;commit("The journey continues.");break;
+ }
+}
+$("#app").addEventListener("click",e=>{
+ const btn=e.target.closest("button");
+ if(!btn||btn.disabled)return;
+ const d=btn.dataset;
+ if(d.action){action(d.action);return}
+ if(d.tab){ui.tab=d.tab;render();return}
+ if(d.good){ui.good=d.good;ui.qty=5;render();return}
+ if(d.sellgood){
+  ui.good=d.sellgood;ui.qty=units(d.sellgood);
+  ui.tab="market";render();notify("Selected entire hold of "+G[d.sellgood].name);
+  return;
+ }
+ if(d.map){
+  ui.tab="routes";render();
+  document.getElementById("loc-"+d.map)?.scrollIntoView({block:"nearest"});
+  return;
+ }
+ if(d.travel){travel(d.travel);return}
+ if(d.accept){accept(Number(d.accept));return}
+ if(d.deliver){deliver(Number(d.deliver));return}
+ if(d.upgrade){upgrade(d.upgrade);return}
+ if(d.skill){learn(d.skill);return}
+ if(d.project){fund(d.project);return}
+ if(d.event){encounter(d.event);return}
+});
+$("#app").addEventListener("input",e=>{
+ if(e.target.id==="qty")ui.qty=clamp(Math.floor(Number(e.target.value)||1),1,999);
+});
+$("#import-file").addEventListener("change",e=>{
+ importSave(e.target.files[0]);e.target.value="";
+});
+document.addEventListener("keydown",e=>{
+ if(ui.start||e.ctrlKey||e.altKey||e.metaKey)return;
+ if(["INPUT","TEXTAREA"].includes(document.activeElement?.tagName))return;
+ if(state.pending||ui.tab==="guide")return;
+ if("123456".includes(e.key)&&e.key.length===1){
+  ui.tab=["market","routes","contracts","workshop","impact","journal"][Number(e.key)-1];
+  render();return;
+ }
+ if(ui.tab==="market"&&e.key.toLowerCase()==="b")buy();
+ if(ui.tab==="market"&&e.key.toLowerCase()==="s")sell();
+});
+
+state=load();
+if(state){
+ ui.start=false;
+ fillOffers(state);
+ save();
+}else{
+ state=makeState();
+}
+render();
+
+})();
+</script>
+</body>
+</html>
